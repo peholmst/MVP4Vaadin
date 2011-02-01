@@ -15,46 +15,78 @@
  */
 package com.github.peholmst.mvp4vaadin.navigation;
 
-
 /**
+ * A View Provider is basically a way to map preinitialized
+ * {@link ControllableView}-instances to String IDs. By using a View Provider
+ * together with a {@link ViewController}, views can navigate between each other
+ * by using String IDs instead of class instances, which reduces the coupling of
+ * your application.
  * 
- * @author petter
- * 
+ * @author Petter Holmström
+ * @since 1.0
  */
 public interface ViewProvider extends java.io.Serializable {
 
 	/**
+	 * Adds the specified view to the view provider, using the view's class name
+	 * as its ID. If another view with the same ID already exists, it will be
+	 * replaced.
 	 * 
 	 * @param view
+	 *            the view to add (must not be <code>null</code>).
+	 * @throws IllegalStateException
+	 *             if the view has not been initialized.
 	 */
-	void addPreinitializedView(ControllableView view);
+	void addPreinitializedView(ControllableView view)
+			throws IllegalStateException;
 
 	/**
+	 * Adds the specified view to the view provider, using the specified view
+	 * ID. If another view with the same ID already exists, it will be replaced.
 	 * 
 	 * @param view
+	 *            the view to add (must not be <code>null</code>).
 	 * @param viewId
+	 *            the ID of the view (must not be <code>null</code> nor empty).
+	 * @throws IllegalStateException
+	 *             iif the view has not been initialized.
 	 */
-	void addPreinitializedView(ControllableView view, String viewId);
+	void addPreinitializedView(ControllableView view, String viewId)
+			throws IllegalStateException;
 
 	/**
+	 * Gets the view with the specified ID. If the ID is null, <code>null</code>
+	 * is returned.
+	 * 
+	 * @see #addPreinitializedView(ControllableView, String)
 	 * 
 	 * @param viewId
-	 * @return
+	 *            the ID of the view to fetch.
+	 * @return the view, or <code>null</code> if not found.
 	 */
 	ControllableView getView(String viewId);
 
 	/**
+	 * Gets the view whose ID is the name of the specified class. If the class
+	 * is null, <code>null</code> is returned.
+	 * 
+	 * @see #addPreinitializedView(ControllableView)
 	 * 
 	 * @param <T>
+	 *            the type of the view to fetch.
 	 * @param viewClass
-	 * @return
+	 *            the class of the view to fetch.
+	 * @return the view, or <code>null</code> if not found.
 	 */
 	<T extends ControllableView> T getView(Class<T> viewClass);
 
 	/**
+	 * Gets the ID of the specified view. If the view is <code>null</code>,
+	 * <code>null</code> is returned.
 	 * 
 	 * @param view
-	 * @return
+	 *            the view whose ID should be fetched.
+	 * @return the ID, or <code>null</code> if not found.
 	 */
 	String getViewId(ControllableView view);
 }

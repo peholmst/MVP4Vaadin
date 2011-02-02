@@ -18,7 +18,6 @@ package com.github.peholmst.mvp4vaadin.navigation;
 import java.util.Map;
 
 import com.github.peholmst.mvp4vaadin.AbstractView;
-import com.github.peholmst.mvp4vaadin.Presenter;
 
 /**
  * This is an abstract base class for {@link ControllableView} implementations.
@@ -31,7 +30,7 @@ import com.github.peholmst.mvp4vaadin.Presenter;
  * @param <P>
  *            the type of the Presenter.
  */
-public abstract class AbstractControllableView<V extends ControllableView, P extends Presenter<V>>
+public abstract class AbstractControllableView<V extends ControllableView, P extends ControllablePresenter<V>>
 		extends AbstractView<V, P> implements ControllableView {
 
 	private static final long serialVersionUID = 6769129811745901667L;
@@ -48,7 +47,9 @@ public abstract class AbstractControllableView<V extends ControllableView, P ext
 	 * <p>
 	 * This implementation updates the {@link #getViewController()
 	 * viewController} property, then delegates to
-	 * {@link #doShowView(Map, ControllableView, Direction)}.
+	 * {@link #doShowView(Map, ControllableView, Direction)}. Finally, it calls
+	 * {@link ControllablePresenter#viewShown(ViewController, Map, ControllableView, Direction)
+	 * viewShown(...)} on the presenter.
 	 */
 	@Override
 	public final void showView(ViewController viewController,
@@ -61,6 +62,7 @@ public abstract class AbstractControllableView<V extends ControllableView, P ext
 		}
 		this.viewController = viewController;
 		doShowView(userData, oldView, direction);
+		getPresenter().viewShown(viewController, userData, oldView, direction);
 	}
 
 	/**

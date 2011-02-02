@@ -47,9 +47,7 @@ public abstract class Presenter<V extends View> implements java.io.Serializable 
 
 	private static final long serialVersionUID = -7842839205919502161L;
 
-	// TODO Check what happens with the logger instance after
-	// serialization/deserialization.
-	private Logger logger = Logger.getLogger(getClass().getName());
+	private transient Logger logger;
 
 	private final V view;
 
@@ -59,6 +57,9 @@ public abstract class Presenter<V extends View> implements java.io.Serializable 
 	 * @return a logger instance, never <code>null</code>.
 	 */
 	protected Logger getLogger() {
+		if (logger == null) {
+			logger = Logger.getLogger(getClass().getName());
+		}
 		return logger;
 	}
 

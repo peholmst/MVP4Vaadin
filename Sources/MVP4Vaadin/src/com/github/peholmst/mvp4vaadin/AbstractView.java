@@ -36,9 +36,7 @@ public abstract class AbstractView<V extends View, P extends Presenter<V>>
 
 	private static final long serialVersionUID = 8812702399992511588L;
 
-	// TODO Check what happens with the logger instance after
-	// serialization/deserialization.
-	private Logger logger = Logger.getLogger(getClass().getName());
+	private transient Logger logger;
 
 	private P presenter;
 
@@ -50,6 +48,9 @@ public abstract class AbstractView<V extends View, P extends Presenter<V>>
 	 * @return a logger instance, never <code>null</code>.
 	 */
 	protected Logger getLogger() {
+		if (logger == null) {
+			logger = Logger.getLogger(getClass().getName());
+		}
 		return logger;
 	}
 
@@ -76,13 +77,13 @@ public abstract class AbstractView<V extends View, P extends Presenter<V>>
 		if (initialized) {
 			throw new IllegalStateException("already initialized");
 		}
-		logger.log(Level.FINE, "Creating presenter");
+		getLogger().log(Level.FINE, "Creating presenter");
 		presenter = createPresenter();
-		logger.log(Level.FINE, "Initializing view {0}", this);
+		getLogger().log(Level.FINE, "Initializing view {0}", this);
 		initView();
-		logger.log(Level.FINE, "Initializing presenter {0}", presenter);
+		getLogger().log(Level.FINE, "Initializing presenter {0}", presenter);
 		presenter.init();
-		logger.log(Level.FINE,
+		getLogger().log(Level.FINE,
 				"View and presenter initialized, finalizing initialization");
 		finalizeInitialization();
 		initialized = true;
@@ -144,7 +145,7 @@ public abstract class AbstractView<V extends View, P extends Presenter<V>>
 		if (event == null) {
 			return;
 		}
-		logger.log(Level.FINE, "Firing event {0}", event);
+		getLogger().log(Level.FINE, "Firing event {0}", event);
 		/*
 		 * Create a clone of the listener list. This way, we prevent weird
 		 * situations if any of the listeners register new listeners or remove

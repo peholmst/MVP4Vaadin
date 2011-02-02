@@ -25,18 +25,6 @@ package com.github.peholmst.mvp4vaadin.navigation;
 public interface ViewControllerListener extends java.io.Serializable {
 
 	/**
-	 * This enumeration defines the directions of the current view change of a
-	 * view controller. If the change results in the stack growing, the
-	 * direction is <code>FORWARD</code>. Otherwise, the direction is
-	 * <code>BACKWARD</code>.
-	 * 
-	 * @author Petter Holmström
-	 */
-	enum Direction {
-		FORWARD, BACKWARD
-	}
-
-	/**
 	 * This method is called by a {@link ViewController} instance when its
 	 * current view has changed.
 	 * 
@@ -48,10 +36,17 @@ public interface ViewControllerListener extends java.io.Serializable {
 	 * @param newView
 	 *            the new view (must not be <code>null</code>).
 	 * @param direction
-	 *            <code>FORWARD</code> if the view stack grew as a result of the
-	 *            change, <code>BACKWARD</code> if it shrunk.
+	 *            <code>FORWARD</code> if the current view changed from a lower
+	 *            view to an upper view in the stack, <code>BACKWARD</code> if
+	 *            the current view changed from an upper view to a lower view in
+	 *            the stack.
+	 * @param newViewIsTopMost
+	 *            true if <code>newView</code> is the top most view on the
+	 *            stack, false if there are views on top of <code>newView</code>
+	 *            (allowing forward navigation).
 	 */
 	void currentViewChanged(ViewController source, ControllableView oldView,
-			ControllableView newView, Direction direction);
+			ControllableView newView, Direction direction,
+			boolean newViewIsTopMost);
 
 }

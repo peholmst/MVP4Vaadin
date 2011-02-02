@@ -30,31 +30,62 @@ import com.github.peholmst.mvp4vaadin.View;
 public interface ControllableView extends View {
 
 	/**
-	 * This method is called by the view controller when the view is opened and
-	 * added to the view stack. If the view will not be used outside of the view
-	 * controller, it may create the GUI components and allocate resources in
-	 * this method.
-	 * 
-	 * @see #init()
+	 * This method is called by the view controller when the view is shown.
 	 * 
 	 * @param viewController
 	 *            the view controller (must not be <code>null</code>).
 	 * @param userData
 	 *            a map of user-definable parameters (may be <code>null</code>).
+	 * @param oldView
+	 *            the view that was previously visible (may be <code>null</code>
+	 *            if this view is the first view to be shown).
+	 * @param direction
+	 *            the direction of the navigation inside the stack (must not be
+	 *            <code>null</code>).
 	 */
-	void showView(ViewController viewController, Map<String, Object> userData);
+	void showView(ViewController viewController, Map<String, Object> userData,
+			ControllableView oldView, Direction direction);
 
 	/**
-	 * This method is called by the view controller before the view is closed
-	 * and removed from the view stack. The view can prevent itself from being
-	 * closed by returning false, e.g. if the user has unsaved changes.
-	 * <p>
-	 * F the view will not be used outside of the view controller, it may
-	 * dispose of any UI resources in this method. This is, however, not a
-	 * requirement.
+	 * Enumeration that defines different hide operations for a view. Please see
+	 * {@link ControllableView#hideView(ViewController, ControllableView, Direction)}
+	 * for more information about what the different alternatives mean.
 	 * 
-	 * @return true if it is OK to close the view, false if the view should
-	 *         remain open.
+	 * @author Petter Holmström
+	 * @since 1.0
 	 */
-	boolean okToClose();
+	enum HideOperation {
+		PREVENT, ALLOW, ALLOW_WITHOUT_FORWARD_NAVIGATION
+	}
+
+	/**
+	 * This method is called by the view controller before the view is hidden
+	 * and another one is shown. The view can control the operation by returning
+	 * a {@link HideOperation} constant:
+	 * <ul>
+	 * <li>{@link HideOperation#PREVENT PREVENT}: aborts the operation; the view
+	 * remains visible.</li>
+	 * <li>{@link HideOperation#ALLOW ALLOW}: allows the operation; the view is
+	 * hidden but remains in the controller stack.</li>
+	 * <li>{@link HideOperation#ALLOW_WITHOUT_FORWARD_NAVIGATION
+	 * ALLOW_WITHOUT_FORWARD_NAVIGATION}: allows the operation; the view is
+	 * hidden. If <code>direction</code> is {@link Direction#FORWARD FORWARD},
+	 * the view remains in the stack. If <code>direction</code> is
+	 * {@link Direction#BACKWARD BACKWARD}, the view and all the views on top of
+	 * it will be removed from the stack.</li>
+	 * </ul>
+	 * 
+	 * @param viewController
+	 *            the view controller (must not be <code>null</code>).
+	 * @param newView
+	 *            the view that will be shown in place of this view (must not be
+	 *            <code>null</code>).
+	 * @param direction
+	 *            the direction of the navigation inside the stack (must not be
+	 *            <code>null</code>).
+	 * @return the hide operation to use (never <code>null</code>).
+	 */
+	HideOperation hideView(ViewController viewController,
+			ControllableView newView, Direction direction);
+
 }

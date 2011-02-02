@@ -33,6 +33,10 @@ import java.util.Map;
  * stack. A view may also prevent the controller from navigating away from it,
  * e.g. if it contains unsaved data.
  * <p>
+ * In some cases, it is also possible to do forward navigation. Please see
+ * {@link ControllableView#hideView(ViewController, ControllableView, Direction)}
+ * for more information about this.
+ * <p>
  * View implementation can request navigation to other views by using one of the
  * <code>goToView(...)</code> methods.
  * 
@@ -41,12 +45,10 @@ import java.util.Map;
  */
 public interface ViewController extends java.io.Serializable {
 	/**
-	 * Gets the current view, if available. This is the top element in the stack
-	 * returned by {@link #getTrail()}. If the stack is empty, <code>null</code>
-	 * is returned.
+	 * Gets the current view, if available. If the stack is empty,
+	 * <code>null</code> is returned.
 	 * 
-	 * @return the current view, or <code>null</code> if the controller does not
-	 *         contain any views.
+	 * @return the current view, or <code>null</code> if the stack is empty.
 	 */
 	ControllableView getCurrentView();
 
@@ -55,18 +57,19 @@ public interface ViewController extends java.io.Serializable {
 	 * stack returned by {@link #getTrail()}. If the stack is empty,
 	 * <code>null</code> is returned.
 	 * 
-	 * @return the first view, or <code>null</code> if the controller does not
-	 *         manage any views.
+	 * @return the first view, or <code>null</code> if the stack is empty.
 	 */
 	ControllableView getFirstView();
 
 	/**
-	 * Attempts to close the current view, remove it from the stack and go back
-	 * to the previous view. If the current view aborts the operation or if
-	 * there are no views to go back to (i.e. the current view is the first
-	 * view), this method returns false.
+	 * Attempts to hide the current view and go back to the previous view in the
+	 * stack. Depending on hide operation returned from the current view, the
+	 * view may remain in the stack or be removed from it. If the current view
+	 * aborts the operation or if there are no views to go back to (i.e. the
+	 * current view is the first view), this method returns false.
 	 * 
-	 * @see ControllableView#okToClose()
+	 * @see ControllableView#hideView(ViewController, ControllableView,
+	 *      Direction)
 	 * @see #getTrail()
 	 * @return true if the current view was changed as a result of this method
 	 *         call, false if not (or if there are no views at all).
@@ -74,12 +77,41 @@ public interface ViewController extends java.io.Serializable {
 	boolean goBack();
 
 	/**
-	 * Attempts to go back to the first view, closing all the other views on the
+	 * Attempts to hide the current view and go forward to the next view in the
+	 * stack. If the current view aborts the operation or if there are no views
+	 * to go forward to (i.e. the current view is the top most view in the
+	 * stack), this method returns false.
+	 * 
+	 * @see ControllableView#hideView(ViewController, ControllableView,
+	 *      Direction)
+	 * @see #getTrail()
+	 * @see #isForwardNavigationPossible()
+	 * @return true if the current view was changed as a result of this method
+	 *         call, false if not (or if there are no views at all).
+	 */
+	boolean goForward();
+
+	/**
+	 * Checks if forward navigation is possible, i.e. that there is at least one
+	 * view on top of the current view in the stack.
+	 * 
+	 * @see #getCurrentView()
+	 * @see #getTrail()
+	 * @see #goForward()
+	 * @return true if forward navigation is possible, false if not.
+	 */
+	boolean isForwardNavigationPossible();
+
+	/**
+	 * Attempts to go back to the first view, hiding all the other views on the
 	 * stack. If any of the views abort the operation, or if the first view is
 	 * already the current view, or if there are no views at all on the stack,
 	 * this method returns false.
 	 * 
-	 * @see ControllableView#okToClose()
+	 * @see ControllableView#hideView(ViewController, ControllableView,
+	 *      Direction)
+	 * @see ControllableView#showView(ViewController, Map, ControllableView,
+	 *      Direction)
 	 * @see #getTrail()
 	 * @return true if the current view was changed as a result of this method
 	 *         call, false if not (or if there are no views at all).
@@ -187,18 +219,19 @@ public interface ViewController extends java.io.Serializable {
 	 * Attempts to go to the specified view. If the view is not already on the
 	 * stack, it is added to the top of the stack and made the current view. Any
 	 * user defined data is passed to the view via the
-	 * {@link ControllableView#showView(Map)} method. If the view is on the
-	 * stack, all the views on top of the view are closed. In this case,
-	 * {@link ControllableView#showView(Map)} will not be called.
+	 * {@link ControllableView#showView(ViewController, Map, ControllableView, Direction)}
+	 * method.
 	 * <p>
 	 * This method will return true if the current view has changed. This may
 	 * not necessarily mean that the current view has changed to the specified
-	 * view, though. If any of the views in the stack refuses to close, the
+	 * view, though. If any of the views in the stack refuses to hide, the
 	 * current view will change to that view. This method only returns false if
 	 * the current view did not change at all.
 	 * 
-	 * @see ControllableView#showView(Map)
-	 * @see ControllableView#okToClose()
+	 * @see ControllableView#hideView(ViewController, ControllableView,
+	 *      Direction)
+	 * @see ControllableView#showView(ViewController, Map, ControllableView,
+	 *      Direction)
 	 * @see #getTrail()
 	 * @param view
 	 *            the view to go to (must not be <code>null</code>).
@@ -234,8 +267,7 @@ public interface ViewController extends java.io.Serializable {
 			throws IllegalStateException, IllegalArgumentException;
 
 	/**
-	 * Gets the stack of open views, with the topmost view being the current
-	 * view.
+	 * Gets the stack of open views.
 	 * 
 	 * @return an unmodifiable list representing the stack, with the bottom most
 	 *         element at index 0.

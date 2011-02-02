@@ -30,6 +30,15 @@ import com.github.peholmst.mvp4vaadin.View;
 public interface ControllableView extends View {
 
 	/**
+	 * Gets the view controller that controls this view. Please note, that a
+	 * view can only be controlled by one controller at a time.
+	 * 
+	 * @return the view controller, or <code>null</code> if the view is not
+	 *         currently controlled.
+	 */
+	ViewController getViewController();
+
+	/**
 	 * This method is called by the view controller when the view is shown.
 	 * 
 	 * @param viewController

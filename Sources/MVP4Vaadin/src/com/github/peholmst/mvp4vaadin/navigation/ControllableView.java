@@ -83,6 +83,11 @@ public interface ControllableView extends View {
 	 * {@link Direction#BACKWARD BACKWARD}, the view and all the views on top of
 	 * it will be removed from the stack.</li>
 	 * </ul>
+	 * <p>
+	 * Please note, that when the controller is jumping past several views (as
+	 * opposed to just moving one view forward or backward), this method will be
+	 * called on all the views that are jumped even though none of them are
+	 * actually visible to the user.
 	 * 
 	 * @param viewController
 	 *            the view controller (must not be <code>null</code>).

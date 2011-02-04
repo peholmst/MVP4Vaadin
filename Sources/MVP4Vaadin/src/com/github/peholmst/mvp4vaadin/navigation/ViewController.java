@@ -220,7 +220,8 @@ public interface ViewController extends java.io.Serializable {
 	 * stack, it is added to the top of the stack and made the current view. Any
 	 * user defined data is passed to the view via the
 	 * {@link ControllableView#showView(ViewController, Map, ControllableView, Direction)}
-	 * method.
+	 * method. If the specified view is already the current view, this method
+	 * returns false immediately without calling any other methods.
 	 * <p>
 	 * This method will return true if the current view has changed. This may
 	 * not necessarily mean that the current view has changed to the specified

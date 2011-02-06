@@ -86,7 +86,7 @@ public abstract class Presenter<V extends View> implements java.io.Serializable 
 	 * 
 	 * @return the view instance (never <code>null</code>).
 	 */
-	protected final V getVew() {
+	protected final V getView() {
 		return view;
 	}
 

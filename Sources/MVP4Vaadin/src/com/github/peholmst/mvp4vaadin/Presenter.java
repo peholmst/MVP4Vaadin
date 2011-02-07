@@ -91,6 +91,17 @@ public abstract class Presenter<V extends View> implements java.io.Serializable 
 	}
 
 	/**
+	 * Convenience method that delegates to
+	 * {@link View#fireViewEvent(ViewEvent)}.
+	 * 
+	 * @param event
+	 *            the event to fire.
+	 */
+	public void fireViewEvent(ViewEvent event) {
+		getView().fireViewEvent(event);
+	}
+
+	/**
 	 * This method is called by {@link AbstractView#init()} to initialize the
 	 * presenter. When this method is called, the view will already have been
 	 * initialized using {@link AbstractView#initView()}.

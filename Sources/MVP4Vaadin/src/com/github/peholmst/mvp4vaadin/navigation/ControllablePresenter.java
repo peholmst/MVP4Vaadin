@@ -35,6 +35,19 @@ public abstract class ControllablePresenter<V extends ControllableView> extends
 	}
 
 	/**
+	 * Gets the view controller that currently controls the view that uses this
+	 * presenter.
+	 * 
+	 * @see #getView()
+	 * @see ControllableView#getViewController()
+	 * @return the view controller, or <code>null</code> if the view is not
+	 *         currently controlled.
+	 */
+	protected ViewController getViewController() {
+		return getView().getViewController();
+	}
+
+	/**
 	 * Called by
 	 * {@link AbstractControllableView#showView(ViewController, java.util.Map, ControllableView, Direction)}
 	 * . This implementation does nothing, subclasses may override.

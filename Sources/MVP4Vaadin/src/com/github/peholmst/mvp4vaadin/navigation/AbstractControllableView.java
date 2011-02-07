@@ -37,6 +37,28 @@ public abstract class AbstractControllableView<V extends ControllableView, P ext
 
 	private ViewController viewController;
 
+	/**
+	 * Creates a new <code>AbstractControllableView</code>, but does NOT
+	 * initialize it. It has to be initialized later by calling {@link #init()}.
+	 * This constructor is useful if any resources need to be injected into the
+	 * view before it is initialized.
+	 */
+	public AbstractControllableView() {
+		super();
+	}
+
+	/**
+	 * Creates a new <code>AbstractControllableView</code> and optionally
+	 * initializes it by calling {@link #init()}.
+	 * 
+	 * @param initialize
+	 *            true to initialize the view directly, false to manually
+	 *            initialize it later.
+	 */
+	public AbstractControllableView(boolean initialize) {
+		super(initialize);
+	}
+
 	@Override
 	public ViewController getViewController() {
 		return viewController;

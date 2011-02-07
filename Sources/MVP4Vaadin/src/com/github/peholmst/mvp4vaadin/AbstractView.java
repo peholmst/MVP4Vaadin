@@ -55,6 +55,30 @@ public abstract class AbstractView<V extends View, P extends Presenter<V>>
 	}
 
 	/**
+	 * Creates a new <code>AbstractView</code>, but does NOT initialize it. It
+	 * has to be initialized later by calling {@link #init()}. This constructor
+	 * is useful if any resources need to be injected into the view before it is
+	 * initialized.
+	 */
+	public AbstractView() {
+
+	}
+
+	/**
+	 * Creates a new <code>AbstractView</code> and optionally initializes it by
+	 * calling {@link #init()}.
+	 * 
+	 * @param initialize
+	 *            true to initialize the view directly, false to manually
+	 *            initialize it later.
+	 */
+	public AbstractView(boolean initialize) {
+		if (initialize) {
+			init();
+		}
+	}
+
+	/**
 	 * This method will be called by the {@link #init()}-method to create the
 	 * presenter.
 	 * 

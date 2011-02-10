@@ -119,10 +119,13 @@ public abstract class AbstractView<V extends View, P extends Presenter<V>>
 	 * will return a presenter instance, but it will not have been initialized
 	 * yet. In other words, if the presenter requires initialization (not all
 	 * presenters do), it must not be invoked by this method.
+	 * <p>
+	 * The default implementation does nothing, subclasses may override.
 	 * 
 	 * @see #finalizeInitialization()
 	 */
-	protected abstract void initView();
+	protected void initView() {
+	}
 
 	/**
 	 * This method is called by the {@link #init()}-method after both the view

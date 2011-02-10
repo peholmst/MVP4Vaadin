@@ -15,7 +15,6 @@
  */
 package com.github.peholmst.mvp4vaadin;
 
-import java.util.logging.Logger;
 
 /**
  * This is an abstract base class for Presenters in the Model-View-Presenter
@@ -47,21 +46,7 @@ public abstract class Presenter<V extends View> implements java.io.Serializable 
 
 	private static final long serialVersionUID = -7842839205919502161L;
 
-	private transient Logger logger;
-
 	private final V view;
-
-	/**
-	 * Returns a logger that can be used to log important information.
-	 * 
-	 * @return a logger instance, never <code>null</code>.
-	 */
-	protected Logger getLogger() {
-		if (logger == null) {
-			logger = Logger.getLogger(getClass().getName());
-		}
-		return logger;
-	}
 
 	/**
 	 * Creates a new <code>Presenter</code> for the specified view. Any

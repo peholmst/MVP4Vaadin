@@ -49,6 +49,8 @@ import com.vaadin.ui.themes.BaseTheme;
 public class NavigationBar extends HorizontalLayout implements
 		ViewControllerListener {
 
+	// TODO Even if forward navigation is possible, the current view should ALWAYS be the last breadcrumb!
+	
 	private static final long serialVersionUID = -6803449379545049738L;
 
 	private ViewController viewController;

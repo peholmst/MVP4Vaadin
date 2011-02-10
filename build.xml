@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="MVP4Vaadin" default="all">
+	
+	<property name="build.dir" value="${basedir}/build"/>
+	<property file="version.properties"/>	
+	
+	<property name="addon.src.dir" value="${basedir}/Sources/MVP4Vaadin/src"/>
+	<property name="addon.lib.dir" value="${basedir}/Sources/MVP4Vaadin/lib"/>
+	<property name="addon.build.dir" value="${build.dir}/addon_classes"/>
+	<property name="addon.jar" value="${build.dir}/${ant.project.name}-${mvp4vaadin.version}.jar"/>
+	<property name="addon.jar.noversion" value="${build.dir}/${ant.project.name}.jar"/>
+	<property name="addon.src.jar" value="${build.dir}/${ant.project.name}-sources-${mvp4vaadin.version}.jar"/>
+	<property name="addon.src.jar.noversion" value="${build.dir}/${ant.project.name}-sources.jar"/>
+	<property name="addon.api.dir" value="${build.dir}/addon_api"/>
+	
+<!--	<property name="demo.src.dir" value="${basedir}/Sources/I18N4VaadinDemo/src"/>
+	<property name="demo.webcontent.dir" value="${basedir}/Sources/I18N4VaadinDemo/WebContent"/>
+	<property name="demo.lib.dir" value="${basedir}/Sources/I18N4VaadinDemo/WebContent/WEB-INF/lib"/>
+	<property name="demo.war.dir" value="${build.dir}/demowar"/>
+	<property name="demo.build.dir" value="${demo.war.dir}/WEB-INF/classes"/>
+	<property name="demo.war" value="${build.dir}/${ant.project.name}Demo-${i18n4vaadin.version}.war"/>-->
+	
+	<path id="addon.build.path">
+		<fileset dir="${addon.lib.dir}" includes="*.jar"/>
+	</path>
+
+<!--	<path id="demo.build.path">
+		<fileset dir="${demo.lib.dir}" includes="*.jar"/>
+		<pathelement location="${addon.jar}"/>
+	</path>-->
+	
+	
+	<target name="clean">
+		<delete dir="${build.dir}" quiet="true"/>
+	</target>
+
+	<target name="compile-addon">
+		<mkdir dir="${addon.build.dir}"/>
+		<javac encoding="utf-8" target="1.6" classpathref="addon.build.path" 
+			destdir="${addon.build.dir}" srcdir="${addon.src.dir}" includeantruntime="false"/>
+		<copy todir="${addon.build.dir}">
+			<fileset dir="${addon.src.dir}" includes="**" excludes="**/*.java"/>
+		</copy>
+	</target>
+	
+	<target name="generate-addon-javadocs">
+		<mkdir dir="${addon.api.dir}"/>
+		<javadoc access="protected" author="true" destdir="${addon.api.dir}" encoding="utf-8" classpathref="addon.build.path" 
+			charset="utf-8" docencoding="utf-8" windowtitle="MVP4Vaadin API Documentation">
+			<link href="http://vaadin.com/api"/>
+			<link href="http://download.oracle.com/javase/6/docs/api"/>
+			<sourcepath path="${addon.src.dir}"/>
+		</javadoc>
+	</target>
+
+	<target name="build-addon-jar" depends="compile-addon, generate-addon-javadocs">
+		<jar compress="true" encoding="utf-8" destfile="${addon.jar}">
+			<manifest>
+				<attribute name="Vaadin-Package-Version" value="1"/>
+				<attribute name="Implementation-Title" value="${ant.project.name}"/>
+				<attribute name="Implementation-Version" value="${mvp4vaadin.version}"/>
+				<attribute name="Implementation-Vendor" value="Petter Holmström"/>
+			</manifest>
+			<fileset dir="${addon.build.dir}" includes="**"/>
+			<fileset dir="${addon.api.dir}" includes="**"/>
+		</jar>
+		<copy file="${addon.jar}" tofile="${addon.jar.noversion}"/>
+	</target>
+	
+	<target name="build-addon-source-jar">
+		<jar basedir="${addon.src.dir}" compress="true" encoding="utf-8" destfile="${addon.src.jar}">
+		</jar>
+		<copy file="${addon.src.jar}" tofile="${addon.src.jar.noversion}"/>		
+	</target>
+	
+<!--	<target name="compile-demo" depends="build-addon-jar">
+		<mkdir dir="${demo.build.dir}"/>
+		<javac encoding="utf-8" target="1.6" classpathref="demo.build.path"
+			destdir="${demo.build.dir}" srcdir="${demo.src.dir}" includeantruntime="false"/>
+		<copy todir="${demo.build.dir}">
+			<fileset dir="${demo.src.dir}" includes="**" excludes="**/*.java"/>
+		</copy>
+		<copy todir="${demo.war.dir}">
+			<fileset dir="${demo.webcontent.dir}" includes="**"/>
+		</copy>
+		<copy todir="${demo.war.dir}/WEB-INF/lib" file="${addon.jar}"/>
+	</target>
+	
+	<target name="build-demo-war" depends="compile-demo">
+		<war basedir="${demo.war.dir}" compress="true" encoding="utf-8" destfile="${demo.war}"/>
+	</target>-->
+	
+	<target name="all" depends="clean,build-addon-jar,build-addon-source-jar">
+	</target>
+
+</project>

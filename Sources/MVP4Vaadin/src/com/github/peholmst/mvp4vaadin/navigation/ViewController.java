@@ -160,7 +160,7 @@ public interface ViewController extends java.io.Serializable {
 	 * view from the {@link #getViewProvider() view provider}. Remember to set a
 	 * view provider before calling this method!
 	 * 
-	 * @see #setViewProvider()
+	 * @see #setViewProvider(ViewProvider)
 	 * @see ViewProvider#getView(String)
 	 * 
 	 * @param viewId
@@ -196,7 +196,7 @@ public interface ViewController extends java.io.Serializable {
 	 * fetches the view from the {@link #getViewProvider() view provider}.
 	 * Remember to set a view provider before calling this method!
 	 * 
-	 * @see #setViewProvider()
+	 * @see #setViewProvider(ViewProvider)
 	 * @see ViewProvider#getView(String)
 	 * 
 	 * @param viewId
@@ -249,7 +249,7 @@ public interface ViewController extends java.io.Serializable {
 	 * the view from the {@link #getViewProvider() view provider}. Remember to
 	 * set a view provider before calling this method!
 	 * 
-	 * @see #setViewProvider()
+	 * @see #setViewProvider(ViewProvider)
 	 * @see ViewProvider#getView(String)
 	 * 
 	 * @param viewId

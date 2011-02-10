@@ -104,7 +104,7 @@ public abstract class AbstractControllableView<V extends ControllableView, P ext
 	 * <p>
 	 * This implementation delegates to
 	 * {@link #doHideView(ControllableView, Direction)}. If the returned
-	 * {@link HideOperation} allows the operation, the
+	 * {@link ControllableView.HideOperation} allows the operation, the
 	 * {@link #getViewController() viewController} property is reset to
 	 * <code>null</code>.
 	 */

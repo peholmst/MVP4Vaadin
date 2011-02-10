@@ -114,7 +114,7 @@ public class DefaultViewController implements ViewController {
 	 * TODO Document me!
 	 * 
 	 * @param viewId
-	 * @return
+	 * @return something
 	 * @throws IllegalStateException
 	 * @throws IllegalArgumentException
 	 */

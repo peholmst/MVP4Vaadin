@@ -16,43 +16,16 @@
 package com.github.peholmst.mvp4vaadin.navigation;
 
 /**
- * A View Provider is basically a way to map preinitialized
- * {@link ControllableView}-instances to String IDs. By using a View Provider
- * together with a {@link ViewController}, views can navigate between each other
- * by using String IDs instead of class instances, which reduces the coupling of
- * your application.
+ * A View Provider is basically a way to map {@link ControllableView}-instances
+ * to String IDs. By using a View Provider together with a
+ * {@link ViewController}, views can navigate between each other by using String
+ * IDs instead of class instances, which reduces the coupling of your
+ * application.
  * 
  * @author Petter Holmström
  * @since 1.0
  */
 public interface ViewProvider extends java.io.Serializable {
-
-	/**
-	 * Adds the specified view to the view provider, using the view's class name
-	 * as its ID. If another view with the same ID already exists, it will be
-	 * replaced.
-	 * 
-	 * @param view
-	 *            the view to add (must not be <code>null</code>).
-	 * @throws IllegalStateException
-	 *             if the view has not been initialized.
-	 */
-	void addPreinitializedView(ControllableView view)
-			throws IllegalStateException;
-
-	/**
-	 * Adds the specified view to the view provider, using the specified view
-	 * ID. If another view with the same ID already exists, it will be replaced.
-	 * 
-	 * @param view
-	 *            the view to add (must not be <code>null</code>).
-	 * @param viewId
-	 *            the ID of the view (must not be <code>null</code> nor empty).
-	 * @throws IllegalStateException
-	 *             iif the view has not been initialized.
-	 */
-	void addPreinitializedView(ControllableView view, String viewId)
-			throws IllegalStateException;
 
 	/**
 	 * Gets the view with the specified ID. If the ID is null, <code>null</code>

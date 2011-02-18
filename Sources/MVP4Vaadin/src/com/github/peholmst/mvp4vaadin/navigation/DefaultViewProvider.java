@@ -33,7 +33,16 @@ public class DefaultViewProvider implements ViewProvider {
 	// Protected access to make unit testing easier
 	protected Map<String, ControllableView> viewMap = new HashMap<String, ControllableView>();
 
-	@Override
+	/**
+	 * Adds the specified view to the view provider, using the view's class name
+	 * as its ID. If another view with the same ID already exists, it will be
+	 * replaced.
+	 * 
+	 * @param view
+	 *            the view to add (must not be <code>null</code>).
+	 * @throws IllegalStateException
+	 *             if the view has not been initialized.
+	 */
 	public void addPreinitializedView(ControllableView view)
 			throws IllegalStateException {
 		if (view == null) {
@@ -45,7 +54,17 @@ public class DefaultViewProvider implements ViewProvider {
 		viewMap.put(view.getClass().getName(), view);
 	}
 
-	@Override
+	/**
+	 * Adds the specified view to the view provider, using the specified view
+	 * ID. If another view with the same ID already exists, it will be replaced.
+	 * 
+	 * @param view
+	 *            the view to add (must not be <code>null</code>).
+	 * @param viewId
+	 *            the ID of the view (must not be <code>null</code> nor empty).
+	 * @throws IllegalStateException
+	 *             iif the view has not been initialized.
+	 */
 	public void addPreinitializedView(ControllableView view, String viewId)
 			throws IllegalStateException {
 		if (view == null) {

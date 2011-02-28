@@ -22,6 +22,8 @@ package com.github.peholmst.mvp4vaadin.navigation;
  * IDs instead of class instances, which reduces the coupling of your
  * application.
  * 
+ * @see InitializingViewProvider
+ * 
  * @author Petter Holmström
  * @since 1.0
  */
@@ -30,8 +32,6 @@ public interface ViewProvider extends java.io.Serializable {
 	/**
 	 * Gets the view with the specified ID. If the ID is null, <code>null</code>
 	 * is returned.
-	 * 
-	 * @see #addPreinitializedView(ControllableView, String)
 	 * 
 	 * @param viewId
 	 *            the ID of the view to fetch.
@@ -42,8 +42,6 @@ public interface ViewProvider extends java.io.Serializable {
 	/**
 	 * Gets the view whose ID is the name of the specified class. If the class
 	 * is null, <code>null</code> is returned.
-	 * 
-	 * @see #addPreinitializedView(ControllableView)
 	 * 
 	 * @param <T>
 	 *            the type of the view to fetch.

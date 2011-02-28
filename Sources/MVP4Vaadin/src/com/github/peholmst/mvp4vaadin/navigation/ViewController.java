@@ -194,10 +194,14 @@ public interface ViewController extends java.io.Serializable {
 	/**
 	 * Does the same as {@link #goToView(ControllableView, String, Object)}, but
 	 * fetches the view from the {@link #getViewProvider() view provider}.
-	 * Remember to set a view provider before calling this method!
+	 * <p>
+	 * Remember to set a view provider before calling this method! If the view
+	 * provider is a {@link InitializingViewProvider}, the user data will be
+	 * passed to the view provider as well.
 	 * 
 	 * @see #setViewProvider(ViewProvider)
 	 * @see ViewProvider#getView(String)
+	 * @see InitializingViewProvider#getView(String, Map)
 	 * 
 	 * @param viewId
 	 *            the ID of the view to go to (must not be <code>null</code>).
@@ -246,11 +250,15 @@ public interface ViewController extends java.io.Serializable {
 
 	/**
 	 * Does the same as {@link #goToView(ControllableView, Map)}, but fetches
-	 * the view from the {@link #getViewProvider() view provider}. Remember to
-	 * set a view provider before calling this method!
+	 * the view from the {@link #getViewProvider() view provider}.
+	 * <p>
+	 * Remember to set a view provider before calling this method! If the view
+	 * provider is an {@link InitializingViewProvider}, the user data will be
+	 * passed to the view provider as well.
 	 * 
 	 * @see #setViewProvider(ViewProvider)
 	 * @see ViewProvider#getView(String)
+	 * @see InitializingViewProvider#getView(String, Map)
 	 * 
 	 * @param viewId
 	 *            the ID of the view to go to (must not be <code>null</code>).

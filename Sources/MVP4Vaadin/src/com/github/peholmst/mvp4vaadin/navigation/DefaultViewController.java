@@ -114,18 +114,24 @@ public class DefaultViewController implements ViewController {
 	 * TODO Document me!
 	 * 
 	 * @param viewId
+	 * @param userData
 	 * @return something
 	 * @throws IllegalStateException
 	 * @throws IllegalArgumentException
 	 */
-	protected ControllableView getViewFromProvider(String viewId) throws IllegalStateException, IllegalArgumentException {
+	protected ControllableView getViewFromProvider(String viewId, Map<String, Object> userData) throws IllegalStateException, IllegalArgumentException {
 		if (viewId == null) {
 			throw new IllegalArgumentException("null viewId");
 		}
 		if (getViewProvider() == null) {
 			throw new IllegalStateException("null viewProvider");
 		}
-		ControllableView view = getViewProvider().getView(viewId);
+		ControllableView view = null;
+		if (getViewProvider() instanceof InitializingViewProvider) {
+			view = ((InitializingViewProvider) getViewProvider()).getView(viewId, userData);
+		} else {
+			view = getViewProvider().getView(viewId);
+		}
 		if (view == null) {
 			throw new IllegalArgumentException("no such view");
 		}
@@ -140,25 +146,30 @@ public class DefaultViewController implements ViewController {
 	@Override
 	public boolean goToView(String viewId) throws IllegalStateException,
 			IllegalArgumentException {
-		return goToView(getViewFromProvider(viewId));
+		return goToView(getViewFromProvider(viewId, null));
 	}
 
+	private Map<String, Object> buildSimpleUserDataMap(String key, Object value) {
+		Map<String, Object> userData = null;
+		if (key != null) {
+			userData = new HashMap<String, Object>();
+			userData.put(key, value);
+		}		
+		return userData;
+	}
+	
 	@Override
 	public boolean goToView(ControllableView view, String userDataKey,
 			Object userDataValue) {
-		Map<String, Object> userData = null;
-		if (userDataKey != null) {
-			userData = new HashMap<String, Object>();
-			userData.put(userDataKey, userDataValue);
-		}
-		return goToView(view, userData);
+		return goToView(view, buildSimpleUserDataMap(userDataKey, userDataValue));
 	}
 
 	@Override
 	public boolean goToView(String viewId, String userDataKey,
 			Object userDataValue) throws IllegalStateException,
 			IllegalArgumentException {
-		return goToView(getViewFromProvider(viewId), userDataKey, userDataValue);
+		Map<String, Object> userData = buildSimpleUserDataMap(userDataKey, userDataValue);
+		return goToView(getViewFromProvider(viewId, userData), userData);
 	}
 
 	@Override
@@ -232,7 +243,7 @@ public class DefaultViewController implements ViewController {
 	@Override
 	public boolean goToView(String viewId, Map<String, Object> userData)
 			throws IllegalStateException, IllegalArgumentException {
-		return goToView(getViewFromProvider(viewId), userData);
+		return goToView(getViewFromProvider(viewId, userData), userData);
 	}
 
 	@Override

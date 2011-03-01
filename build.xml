@@ -44,8 +44,8 @@
 	</target>
 	
 	<target name="generate-addon-javadocs">
-		<mkdir dir="${addon.api.dir}"/>
-		<javadoc access="protected" author="true" destdir="${addon.api.dir}" encoding="utf-8" classpathref="addon.build.path" 
+		<mkdir dir="${addon.api.dir}/doc"/>
+		<javadoc access="protected" author="true" destdir="${addon.api.dir}/doc" encoding="utf-8" classpathref="addon.build.path" 
 			charset="utf-8" docencoding="utf-8" windowtitle="MVP4Vaadin API Documentation">
 			<link href="http://vaadin.com/api"/>
 			<link href="http://download.oracle.com/javase/6/docs/api"/>

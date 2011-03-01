@@ -15,15 +15,8 @@
  */
 package com.github.peholmst.mvp4vaadin.navigation;
 
-import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.easymock.EasyMock.*;
+import static org.junit.Assert.*;
 
 import java.util.HashMap;
 
@@ -44,6 +37,7 @@ public class DefaultViewControllerTest {
 	ControllableView view;
 	ControllableView view2;
 	ControllableView view3;
+	ControllableView view4;
 	ViewProvider<ControllableView> viewProvider;
 	ViewControllerListener<ControllableView> controllerListener;
 
@@ -54,6 +48,7 @@ public class DefaultViewControllerTest {
 		view = createMock(ControllableView.class);
 		view2 = createMock(ControllableView.class);
 		view3 = createMock(ControllableView.class);
+		view4 = createMock(ControllableView.class);
 		viewProvider = createMock(ViewProvider.class);
 		controllerListener = createMock(ViewControllerListener.class);
 	}
@@ -704,5 +699,49 @@ public class DefaultViewControllerTest {
 
 		verify(view);
 		verify(controllerListener);		
+	}
+	
+	@Test
+	public void testGoToNewViewsWithForwardNavigationPossible() {
+		// This test was written to detect a bug that Marcus found.
+		
+		// Instruct mocks
+		view.showView(controller, null, view2, Direction.BACKWARD);
+		view.showView(controller, null, view3, Direction.BACKWARD);
+		view.showView(controller, null, view4, Direction.BACKWARD);
+		replay(view);
+		
+		view2.showView(controller, null, view, Direction.FORWARD);		
+		expect(view2.hideView(controller, view, Direction.BACKWARD)).andReturn(HideOperation.ALLOW);		
+		replay(view2);
+
+		view3.showView(controller, null, view, Direction.FORWARD);		
+		expect(view3.hideView(controller, view, Direction.BACKWARD)).andReturn(HideOperation.ALLOW);		
+		replay(view3);
+		
+		view4.showView(controller, null, view, Direction.FORWARD);		
+		expect(view4.hideView(controller, view, Direction.BACKWARD)).andReturn(HideOperation.ALLOW);		
+		replay(view4);		
+		
+		// Setup views
+		controller.viewStack.push(view);
+		controller.currentView = view;
+		controller.indexOfCurrentView = 0;
+
+		// Run test
+		controller.goToView(view2);
+		controller.goBack();
+		controller.goToView(view3);
+		controller.goBack();
+		controller.goToView(view4);
+		controller.goBack();
+		
+		// Verify results
+		assertSame(view, controller.getCurrentView());
+		
+		verify(view);
+		verify(view2);
+		verify(view3);
+		verify(view4);
 	}
 }

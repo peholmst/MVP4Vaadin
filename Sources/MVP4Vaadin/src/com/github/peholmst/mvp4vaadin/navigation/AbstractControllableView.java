@@ -130,13 +130,13 @@ public abstract class AbstractControllableView<V extends ControllableView, P ext
 	 * This method is called by
 	 * {@link #hideView(ViewController, ControllableView, Direction)} before the
 	 * view controller has been reset. This implementation always returns
-	 * <code>ALLOW</code>, subclasses may override.
+	 * <code>ALLOW_WITHOUT_FORWARD_NAVIGATION</code>, subclasses may override.
 	 * 
 	 * @see #getViewController()
 	 */
 	protected HideOperation doHideView(ControllableView newView,
 			Direction direction) {
-		return HideOperation.ALLOW;
+		return HideOperation.ALLOW_WITHOUT_FORWARD_NAVIGATION;
 	}
 
 }

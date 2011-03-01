@@ -240,7 +240,13 @@ public class DefaultViewController<V extends ControllableView> implements
 						"Forward navigation is not yet implemented");
 			}
 		} else {
-			// We're adding a new view to the stack
+			// We're adding a new view to the stack.
+			// If the current view is not the topmost view, we should clear the stack.
+			if (!viewStack.isEmpty() && currentView != viewStack.peek()) {
+				do {
+					viewStack.pop();
+				} while (currentView != viewStack.peek());
+			}
 			viewStack.push(view);
 			setCurrentView(view, viewStack.size() - 1, userData,
 					Direction.FORWARD);

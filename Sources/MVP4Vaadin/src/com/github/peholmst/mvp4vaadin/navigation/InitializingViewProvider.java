@@ -22,10 +22,15 @@ import java.util.Map;
  * that actually work more like view factories in that they create new instances
  * of the views when they are requested.
  * 
- * @author Petter holmström
+ * @author Petter Holmström
  * @since 1.0
+ * @param <V>
+ *            the super interface of the views provided by this view provider.
+ *            In most cases this is <code>ControllableView</code>, but you are
+ *            free to use your own custom interface.
  */
-public interface InitializingViewProvider extends ViewProvider {
+public interface InitializingViewProvider<V extends ControllableView> extends
+		ViewProvider<V> {
 
 	/**
 	 * Gets the view with the specified ID. If the ID is null, <code>null</code>
@@ -48,5 +53,5 @@ public interface InitializingViewProvider extends ViewProvider {
 	 *            a map of user specified data, may be <code>null</code>.
 	 * @return the view, or <code>null</code> if not found.
 	 */
-	ControllableView getView(String viewId, Map<String, Object> userData);
+	V getView(String viewId, Map<String, Object> userData);
 }

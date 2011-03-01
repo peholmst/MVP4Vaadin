@@ -25,13 +25,18 @@ import java.util.Map;
  * 
  * @author Petter Holmström
  * @since 1.0
+ * @param <V>
+ *            the super interface of the views provided by this view provider.
+ *            In most cases this is <code>ControllableView</code>, but you are
+ *            free to use your own custom interface.
  */
-public class DefaultViewProvider implements ViewProvider {
+public class DefaultViewProvider<V extends ControllableView> implements
+		ViewProvider<V> {
 
 	private static final long serialVersionUID = -3278782991118186145L;
 
 	// Protected access to make unit testing easier
-	protected Map<String, ControllableView> viewMap = new HashMap<String, ControllableView>();
+	protected Map<String, V> viewMap = new HashMap<String, V>();
 
 	/**
 	 * Adds the specified view to the view provider, using the view's class name
@@ -43,8 +48,7 @@ public class DefaultViewProvider implements ViewProvider {
 	 * @throws IllegalStateException
 	 *             if the view has not been initialized.
 	 */
-	public void addPreinitializedView(ControllableView view)
-			throws IllegalStateException {
+	public void addPreinitializedView(V view) throws IllegalStateException {
 		if (view == null) {
 			throw new IllegalArgumentException("null view");
 		}
@@ -63,9 +67,9 @@ public class DefaultViewProvider implements ViewProvider {
 	 * @param viewId
 	 *            the ID of the view (must not be <code>null</code> nor empty).
 	 * @throws IllegalStateException
-	 *             iif the view has not been initialized.
+	 *             if the view has not been initialized.
 	 */
-	public void addPreinitializedView(ControllableView view, String viewId)
+	public void addPreinitializedView(V view, String viewId)
 			throws IllegalStateException {
 		if (view == null) {
 			throw new IllegalArgumentException("null view");
@@ -80,7 +84,7 @@ public class DefaultViewProvider implements ViewProvider {
 	}
 
 	@Override
-	public ControllableView getView(String viewId) {
+	public V getView(String viewId) {
 		if (viewId == null) {
 			return null;
 		}
@@ -88,7 +92,7 @@ public class DefaultViewProvider implements ViewProvider {
 	}
 
 	@Override
-	public <T extends ControllableView> T getView(Class<T> viewClass) {
+	public <T extends V> T getView(Class<T> viewClass) {
 		if (viewClass == null) {
 			return null;
 		}
@@ -97,11 +101,11 @@ public class DefaultViewProvider implements ViewProvider {
 	}
 
 	@Override
-	public String getViewId(ControllableView view) {
+	public String getViewId(V view) {
 		if (view == null) {
 			return null;
 		}
-		for (Map.Entry<String, ControllableView> entry : viewMap.entrySet()) {
+		for (Map.Entry<String, V> entry : viewMap.entrySet()) {
 			if (entry.getValue().equals(view)) {
 				return entry.getKey();
 			}

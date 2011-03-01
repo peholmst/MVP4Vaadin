@@ -25,34 +25,40 @@ import java.util.Stack;
 import com.github.peholmst.mvp4vaadin.navigation.ControllableView.HideOperation;
 
 /**
- * This is the default implementation of the {@link ViewController} interface. It
- * does not require any special initialization, just create a new instance and
- * start using it.
- *  
+ * This is the default implementation of the {@link ViewController} interface.
+ * It does not require any special initialization, just create a new instance
+ * and start using it.
+ * 
  * @author Petter Holmström
  * @since 1.0
+ * @param <V>
+ *            the super interface of all views handled by this controller. In
+ *            most cases this is <code>ControllableView</code>, but if you want
+ *            to extend MVP4Vaadin and use a more specialized view interface,
+ *            you can specify it here as well.
  */
-public class DefaultViewController implements ViewController {
+public class DefaultViewController<V extends ControllableView> implements
+		ViewController<V> {
 
 	private static final long serialVersionUID = -8268392494366653976L;
 
-	private ViewProvider viewProvider;
-	
+	private ViewProvider<V> viewProvider;
+
 	// Protected access to make unit testing easier
-	
-	protected ControllableView currentView;
+
+	protected V currentView;
 
 	protected int indexOfCurrentView = -1;
-	
-	protected Stack<ControllableView> viewStack = new Stack<ControllableView>();
-	
+
+	protected Stack<V> viewStack = new Stack<V>();
+
 	@Override
-	public ControllableView getCurrentView() {
+	public V getCurrentView() {
 		return currentView;
 	}
 
 	@Override
-	public ControllableView getFirstView() {
+	public V getFirstView() {
 		return viewStack.isEmpty() ? null : viewStack.firstElement();
 	}
 
@@ -62,19 +68,22 @@ public class DefaultViewController implements ViewController {
 			// There is nothing to go back to
 			return false;
 		}
-		ControllableView newView = viewStack.get(indexOfCurrentView -1);
-		HideOperation operation = currentView.hideView(this, newView, Direction.BACKWARD);
+		V newView = viewStack.get(indexOfCurrentView - 1);
+		HideOperation operation = currentView.hideView(this, newView,
+				Direction.BACKWARD);
 		if (operation.equals(HideOperation.PREVENT)) {
 			// Current view is not changed
 			return false;
 		} else if (operation.equals(HideOperation.ALLOW)) {
 			// Current view is changed, but stack remains untouched
-			setCurrentView(newView, indexOfCurrentView-1, null, Direction.BACKWARD);
+			setCurrentView(newView, indexOfCurrentView - 1, null,
+					Direction.BACKWARD);
 			return true;
 		} else {
 			// Current view is changed, stack is modified
 			viewStack.pop();
-			setCurrentView(newView, indexOfCurrentView-1, null, Direction.BACKWARD);
+			setCurrentView(newView, indexOfCurrentView - 1, null,
+					Direction.BACKWARD);
 			return true;
 		}
 	}
@@ -92,7 +101,7 @@ public class DefaultViewController implements ViewController {
 
 	@Override
 	public boolean goToFirstView() {
-		ControllableView firstView = getFirstView();
+		V firstView = getFirstView();
 		if (firstView == null) {
 			return false;
 		} else {
@@ -101,12 +110,12 @@ public class DefaultViewController implements ViewController {
 	}
 
 	@Override
-	public ViewProvider getViewProvider() {
+	public ViewProvider<V> getViewProvider() {
 		return viewProvider;
 	}
 
 	@Override
-	public void setViewProvider(ViewProvider viewProvider) {
+	public void setViewProvider(ViewProvider<V> viewProvider) {
 		this.viewProvider = viewProvider;
 	}
 
@@ -119,16 +128,18 @@ public class DefaultViewController implements ViewController {
 	 * @throws IllegalStateException
 	 * @throws IllegalArgumentException
 	 */
-	protected ControllableView getViewFromProvider(String viewId, Map<String, Object> userData) throws IllegalStateException, IllegalArgumentException {
+	protected V getViewFromProvider(String viewId, Map<String, Object> userData)
+			throws IllegalStateException, IllegalArgumentException {
 		if (viewId == null) {
 			throw new IllegalArgumentException("null viewId");
 		}
 		if (getViewProvider() == null) {
 			throw new IllegalStateException("null viewProvider");
 		}
-		ControllableView view = null;
+		V view = null;
 		if (getViewProvider() instanceof InitializingViewProvider) {
-			view = ((InitializingViewProvider) getViewProvider()).getView(viewId, userData);
+			view = ((InitializingViewProvider<V>) getViewProvider()).getView(
+					viewId, userData);
 		} else {
 			view = getViewProvider().getView(viewId);
 		}
@@ -137,9 +148,9 @@ public class DefaultViewController implements ViewController {
 		}
 		return view;
 	}
-	
+
 	@Override
-	public boolean goToView(ControllableView view) {
+	public boolean goToView(V view) {
 		return goToView(view, null);
 	}
 
@@ -154,26 +165,27 @@ public class DefaultViewController implements ViewController {
 		if (key != null) {
 			userData = new HashMap<String, Object>();
 			userData.put(key, value);
-		}		
+		}
 		return userData;
 	}
-	
+
 	@Override
-	public boolean goToView(ControllableView view, String userDataKey,
-			Object userDataValue) {
-		return goToView(view, buildSimpleUserDataMap(userDataKey, userDataValue));
+	public boolean goToView(V view, String userDataKey, Object userDataValue) {
+		return goToView(view,
+				buildSimpleUserDataMap(userDataKey, userDataValue));
 	}
 
 	@Override
 	public boolean goToView(String viewId, String userDataKey,
 			Object userDataValue) throws IllegalStateException,
 			IllegalArgumentException {
-		Map<String, Object> userData = buildSimpleUserDataMap(userDataKey, userDataValue);
+		Map<String, Object> userData = buildSimpleUserDataMap(userDataKey,
+				userDataValue);
 		return goToView(getViewFromProvider(viewId, userData), userData);
 	}
 
 	@Override
-	public boolean goToView(ControllableView view, Map<String, Object> userData) {
+	public boolean goToView(V view, Map<String, Object> userData) {
 		if (view == null) {
 			throw new IllegalArgumentException("null view");
 		}
@@ -183,7 +195,7 @@ public class DefaultViewController implements ViewController {
 			return false;
 		}
 
-		ControllableView oldView = currentView;
+		V oldView = currentView;
 
 		int indexOfNewViewInStack = viewStack.indexOf(view);
 		if (indexOfNewViewInStack != -1) {
@@ -191,7 +203,7 @@ public class DefaultViewController implements ViewController {
 			// forward or backward
 			if (indexOfNewViewInStack < indexOfCurrentView) {
 				// We're moving backward
-				ControllableView viewToHide = currentView;
+				V viewToHide = currentView;
 				int indexOfViewToHide = indexOfCurrentView;
 				while (viewToHide != view) {
 					HideOperation operation = viewToHide.hideView(this, view,
@@ -202,37 +214,43 @@ public class DefaultViewController implements ViewController {
 							// did change
 							// We pass null instead of the user data as this
 							// view is not the intended destination.
-							setCurrentView(viewToHide, indexOfViewToHide, null, Direction.BACKWARD);
+							setCurrentView(viewToHide, indexOfViewToHide, null,
+									Direction.BACKWARD);
 							return true;
 						} else {
 							return false;
 						}
 					} else if (operation.equals(HideOperation.ALLOW)) {
-						// Do not remove any elements from the view stack => allow forward navigation
+						// Do not remove any elements from the view stack =>
+						// allow forward navigation
 						viewToHide = viewStack.elementAt(--indexOfViewToHide);
 					} else {
-						// Remove elements from stack to prevent forward navigation
+						// Remove elements from stack to prevent forward
+						// navigation
 						viewToHide = viewStack.elementAt(--indexOfViewToHide);
-						viewStack.setSize(indexOfViewToHide +1);
+						viewStack.setSize(indexOfViewToHide + 1);
 					}
 				}
-				setCurrentView(view, indexOfViewToHide, userData, Direction.BACKWARD);
+				setCurrentView(view, indexOfViewToHide, userData,
+						Direction.BACKWARD);
 			} else {
 				// We're moving forward
 				// TODO Implement forward navigation
-				throw new UnsupportedOperationException("Forward navigation is not yet implemented");
+				throw new UnsupportedOperationException(
+						"Forward navigation is not yet implemented");
 			}
 		} else {
 			// We're adding a new view to the stack
 			viewStack.push(view);
-			setCurrentView(view, viewStack.size() -1, userData, Direction.FORWARD);
+			setCurrentView(view, viewStack.size() - 1, userData,
+					Direction.FORWARD);
 		}
 		return true;
 	}
 
-	protected void setCurrentView(ControllableView view, int indexOfCurrentView,
+	protected void setCurrentView(V view, int indexOfCurrentView,
 			Map<String, Object> userData, Direction direction) {
-		ControllableView oldView = currentView;
+		V oldView = currentView;
 		currentView = view;
 		this.indexOfCurrentView = indexOfCurrentView;
 		view.showView(this, userData, oldView, direction);
@@ -247,11 +265,11 @@ public class DefaultViewController implements ViewController {
 	}
 
 	@Override
-	public List<ControllableView> getTrail() {
+	public List<V> getTrail() {
 		return Collections.unmodifiableList(viewStack);
 	}
 
-	private final LinkedList<ViewControllerListener> listenerList = new LinkedList<ViewControllerListener>();
+	private final LinkedList<ViewControllerListener<V>> listenerList = new LinkedList<ViewControllerListener<V>>();
 
 	/**
 	 * TODO Document me!
@@ -262,31 +280,30 @@ public class DefaultViewController implements ViewController {
 	 * @param newViewIsTopMost
 	 */
 	@SuppressWarnings("unchecked")
-	protected void fireCurrentViewChanged(ControllableView oldView,
-			ControllableView newView, Direction direction,
-			boolean newViewIsTopMost) {
+	protected void fireCurrentViewChanged(V oldView, V newView,
+			Direction direction, boolean newViewIsTopMost) {
 		/*
 		 * Create a clone of the listener list. This way, we prevent weird
 		 * situations if any of the listeners register new listeners or remove
 		 * existing ones.
 		 */
-		LinkedList<ViewControllerListener> clonedList = (LinkedList<ViewControllerListener>) listenerList
+		LinkedList<ViewControllerListener<V>> clonedList = (LinkedList<ViewControllerListener<V>>) listenerList
 				.clone();
-		for (ViewControllerListener listener : clonedList) {
+		for (ViewControllerListener<V> listener : clonedList) {
 			listener.currentViewChanged(this, oldView, newView, direction,
 					newViewIsTopMost);
 		}
 	}
 
 	@Override
-	public void addListener(ViewControllerListener listener) {
+	public void addListener(ViewControllerListener<V> listener) {
 		if (listener != null) {
 			listenerList.add(listener);
 		}
 	}
 
 	@Override
-	public void removeListener(ViewControllerListener listener) {
+	public void removeListener(ViewControllerListener<V> listener) {
 		if (listener != null) {
 			listenerList.remove(listener);
 		}

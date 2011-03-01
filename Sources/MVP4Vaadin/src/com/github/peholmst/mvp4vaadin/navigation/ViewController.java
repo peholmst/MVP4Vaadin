@@ -42,15 +42,21 @@ import java.util.Map;
  * 
  * @author Petter Holmström
  * @since 1.0
+ * @param <V>
+ *            the super interface of all views handled by this controller. In
+ *            most cases this is <code>ControllableView</code>, but if you want
+ *            to extend MVP4Vaadin and use a more specialized view interface,
+ *            you can specify it here as well.
  */
-public interface ViewController extends java.io.Serializable {
+public interface ViewController<V extends ControllableView> extends
+		java.io.Serializable {
 	/**
 	 * Gets the current view, if available. If the stack is empty,
 	 * <code>null</code> is returned.
 	 * 
 	 * @return the current view, or <code>null</code> if the stack is empty.
 	 */
-	ControllableView getCurrentView();
+	V getCurrentView();
 
 	/**
 	 * Gets the first view, if available. This is the bottom element in the
@@ -59,7 +65,7 @@ public interface ViewController extends java.io.Serializable {
 	 * 
 	 * @return the first view, or <code>null</code> if the stack is empty.
 	 */
-	ControllableView getFirstView();
+	V getFirstView();
 
 	/**
 	 * Attempts to hide the current view and go back to the previous view in the
@@ -132,7 +138,7 @@ public interface ViewController extends java.io.Serializable {
 	 * @return the view provider, or <code>null</code> if none has been
 	 *         specified.
 	 */
-	ViewProvider getViewProvider();
+	ViewProvider<V> getViewProvider();
 
 	/**
 	 * Sets or clears the view provider for this controller.
@@ -142,7 +148,7 @@ public interface ViewController extends java.io.Serializable {
 	 * @param viewProvider
 	 *            the view provider to set, may be <code>null</code>.
 	 */
-	void setViewProvider(ViewProvider viewProvider);
+	void setViewProvider(ViewProvider<V> viewProvider);
 
 	/**
 	 * Same as calling {@link #goToView(ControllableView, Map) goToView(view,
@@ -153,7 +159,7 @@ public interface ViewController extends java.io.Serializable {
 	 * @return true if the current view was changed as a result of this method
 	 *         call, false if not (or if there are no views at all).
 	 */
-	boolean goToView(ControllableView view);
+	boolean goToView(V view);
 
 	/**
 	 * Does the same as {@link #goToView(ControllableView)}, but fetches the
@@ -188,8 +194,7 @@ public interface ViewController extends java.io.Serializable {
 	 * @return true if the current view was changed as a result of this method
 	 *         call, false if not (or if there are no views at all).
 	 */
-	boolean goToView(ControllableView view, String userDataKey,
-			Object userDataValue);
+	boolean goToView(V view, String userDataKey, Object userDataValue);
 
 	/**
 	 * Does the same as {@link #goToView(ControllableView, String, Object)}, but
@@ -246,7 +251,7 @@ public interface ViewController extends java.io.Serializable {
 	 * @return true if the current view was changed as a result of this method
 	 *         call, false if not (or if there are no views at all).
 	 */
-	boolean goToView(ControllableView view, Map<String, Object> userData);
+	boolean goToView(V view, Map<String, Object> userData);
 
 	/**
 	 * Does the same as {@link #goToView(ControllableView, Map)}, but fetches
@@ -281,7 +286,7 @@ public interface ViewController extends java.io.Serializable {
 	 * @return an unmodifiable list representing the stack, with the bottom most
 	 *         element at index 0.
 	 */
-	List<ControllableView> getTrail();
+	List<V> getTrail();
 
 	/**
 	 * Registers a listener to be notified when the current view is changed. A
@@ -291,7 +296,7 @@ public interface ViewController extends java.io.Serializable {
 	 * @param listener
 	 *            the listener to add.
 	 */
-	void addListener(ViewControllerListener listener);
+	void addListener(ViewControllerListener<V> listener);
 
 	/**
 	 * Unregisters a listener previously registered using
@@ -303,6 +308,6 @@ public interface ViewController extends java.io.Serializable {
 	 * @param listener
 	 *            the listener to remove.
 	 */
-	void removeListener(ViewControllerListener listener);
+	void removeListener(ViewControllerListener<V> listener);
 
 }

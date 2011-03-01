@@ -26,8 +26,13 @@ package com.github.peholmst.mvp4vaadin.navigation;
  * 
  * @author Petter Holmström
  * @since 1.0
+ * @param <V>
+ *            the super interface of the views provided by this view provider.
+ *            In most cases this is <code>ControllableView</code>, but you are
+ *            free to use your own custom interface.
  */
-public interface ViewProvider extends java.io.Serializable {
+public interface ViewProvider<V extends ControllableView> extends
+		java.io.Serializable {
 
 	/**
 	 * Gets the view with the specified ID. If the ID is null, <code>null</code>
@@ -37,7 +42,7 @@ public interface ViewProvider extends java.io.Serializable {
 	 *            the ID of the view to fetch.
 	 * @return the view, or <code>null</code> if not found.
 	 */
-	ControllableView getView(String viewId);
+	V getView(String viewId);
 
 	/**
 	 * Gets the view whose ID is the name of the specified class. If the class
@@ -49,7 +54,7 @@ public interface ViewProvider extends java.io.Serializable {
 	 *            the class of the view to fetch.
 	 * @return the view, or <code>null</code> if not found.
 	 */
-	<T extends ControllableView> T getView(Class<T> viewClass);
+	<T extends V> T getView(Class<T> viewClass);
 
 	/**
 	 * Gets the ID of the specified view. If the view is <code>null</code>,
@@ -59,5 +64,5 @@ public interface ViewProvider extends java.io.Serializable {
 	 *            the view whose ID should be fetched.
 	 * @return the ID, or <code>null</code> if not found.
 	 */
-	String getViewId(ControllableView view);
+	String getViewId(V view);
 }

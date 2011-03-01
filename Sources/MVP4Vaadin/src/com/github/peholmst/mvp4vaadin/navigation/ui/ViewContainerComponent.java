@@ -31,13 +31,17 @@ import com.vaadin.ui.VerticalLayout;
  * 
  * @author Petter Holmström
  * @since 1.0
+ * @param V
+ *            the super interface of the views. In most cases this is
+ *            <code>ControllableView</code>, but you are free to use your own
+ *            interface.
  */
-public class ViewContainerComponent extends VerticalLayout implements
-		ViewControllerListener {
+public class ViewContainerComponent<V extends ControllableView> extends
+		VerticalLayout implements ViewControllerListener<V> {
 
 	private static final long serialVersionUID = 5199669312515753609L;
 
-	private ViewController viewController;
+	private ViewController<V> viewController;
 
 	private ComponentContainer currentViewComponent;
 
@@ -48,7 +52,7 @@ public class ViewContainerComponent extends VerticalLayout implements
 	 * @param viewController
 	 *            the view controller to set.
 	 */
-	public void setViewController(ViewController viewController) {
+	public void setViewController(ViewController<V> viewController) {
 		if (this.viewController != null) {
 			this.viewController.removeListener(this);
 		}
@@ -64,7 +68,7 @@ public class ViewContainerComponent extends VerticalLayout implements
 	 * 
 	 * @return the view controller, or <code>null</code> if none has been set.
 	 */
-	public ViewController getViewController() {
+	public ViewController<V> getViewController() {
 		return viewController;
 	}
 
@@ -80,9 +84,8 @@ public class ViewContainerComponent extends VerticalLayout implements
 	}
 
 	@Override
-	public void currentViewChanged(ViewController source,
-			ControllableView oldView, ControllableView newView,
-			Direction direction, boolean newViewIsTopMost) {
+	public void currentViewChanged(ViewController<V> source, V oldView,
+			V newView, Direction direction, boolean newViewIsTopMost) {
 		if (source == this.viewController) {
 			if (newView instanceof VaadinView) {
 				ComponentContainer newViewComponent = ((VaadinView) newView)

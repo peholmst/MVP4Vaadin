@@ -43,7 +43,7 @@ public abstract class ControllablePresenter<V extends ControllableView> extends
 	 * @return the view controller, or <code>null</code> if the view is not
 	 *         currently controlled.
 	 */
-	protected ViewController getViewController() {
+	protected ViewController<? extends ControllableView> getViewController() {
 		return getView().getViewController();
 	}
 
@@ -63,7 +63,8 @@ public abstract class ControllablePresenter<V extends ControllableView> extends
 	 *            the direction of the navigation inside the stack (must not be
 	 *            <code>null</code>).
 	 */
-	protected void viewShown(ViewController viewController,
+	protected void viewShown(
+			ViewController<? extends ControllableView> viewController,
 			Map<String, Object> userData, ControllableView oldView,
 			Direction direction) {
 	}

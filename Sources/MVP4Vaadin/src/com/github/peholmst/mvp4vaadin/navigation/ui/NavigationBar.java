@@ -45,15 +45,19 @@ import com.vaadin.ui.themes.BaseTheme;
  * 
  * @author Petter Holmström
  * @since 1.0
+ * @param V
+ *            the super interface of the views. In most cases this is
+ *            <code>ControllableView</code>, but you are free to use your own
+ *            interface.
  */
-public class NavigationBar extends HorizontalLayout implements
-		ViewControllerListener {
+public class NavigationBar<V extends ControllableView> extends HorizontalLayout implements
+		ViewControllerListener<V> {
 
 	// TODO Even if forward navigation is possible, the current view should ALWAYS be the last breadcrumb!
 	
 	private static final long serialVersionUID = -6803449379545049738L;
 
-	private ViewController viewController;
+	private ViewController<V> viewController;
 
 	/**
 	 * Sets the view controller whose current view will be shown in this view
@@ -62,7 +66,7 @@ public class NavigationBar extends HorizontalLayout implements
 	 * @param viewController
 	 *            the view controller to set.
 	 */
-	public void setViewController(ViewController viewController) {
+	public void setViewController(ViewController<V> viewController) {
 		if (this.viewController != null) {
 			this.viewController.removeListener(this);
 		}
@@ -79,22 +83,22 @@ public class NavigationBar extends HorizontalLayout implements
 	 * 
 	 * @return the view controller, or <code>null</code> if none has been set.
 	 */
-	public ViewController getViewController() {
+	public ViewController<V> getViewController() {
 		return viewController;
 	}
 
 	private void addBreadcrumbsForController() {
 		removeAllComponents();
 		if (getViewController() != null) {
-			for (ControllableView v : getViewController().getTrail()) {
+			for (V v : getViewController().getTrail()) {
 				addBreadcrumbForView(v);
 			}
 		}
 	}
 
 	@Override
-	public void currentViewChanged(ViewController source,
-			ControllableView oldView, ControllableView newView,
+	public void currentViewChanged(ViewController<V> source,
+			V oldView, V newView,
 			Direction direction, boolean newViewIsTopMost) {
 		if (source != viewController) {
 			return;
@@ -104,7 +108,7 @@ public class NavigationBar extends HorizontalLayout implements
 			 * The view is already in the bread crumbs, so we just have to check
 			 * if there are any views at the end that need to be removed
 			 */
-			ControllableView lastView = source.getTrail().get(
+			V lastView = source.getTrail().get(
 					source.getTrail().size() - 1);
 			Iterator<Component> it = components.descendingIterator();
 			while (it.hasNext()) {
@@ -155,7 +159,7 @@ public class NavigationBar extends HorizontalLayout implements
 	 * @param view
 	 *            the view to add (must not be <code>null</code>).
 	 */
-	protected void addBreadcrumbForView(final ControllableView view) {
+	protected void addBreadcrumbForView(final V view) {
 		if (getViewController().getTrail().size() > 1) {
 			Label separator = addViewSeparator();
 			separator.setData(view);

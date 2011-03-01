@@ -36,7 +36,7 @@ public interface ControllableView extends View {
 	 * @return the view controller, or <code>null</code> if the view is not
 	 *         currently controlled.
 	 */
-	ViewController getViewController();
+	ViewController<? extends ControllableView> getViewController();
 
 	/**
 	 * This method is called by the view controller when the view is shown.
@@ -52,8 +52,9 @@ public interface ControllableView extends View {
 	 *            the direction of the navigation inside the stack (must not be
 	 *            <code>null</code>).
 	 */
-	void showView(ViewController viewController, Map<String, Object> userData,
-			ControllableView oldView, Direction direction);
+	void showView(ViewController<? extends ControllableView> viewController,
+			Map<String, Object> userData, ControllableView oldView,
+			Direction direction);
 
 	/**
 	 * Enumeration that defines different hide operations for a view. Please see
@@ -99,7 +100,8 @@ public interface ControllableView extends View {
 	 *            <code>null</code>).
 	 * @return the hide operation to use (never <code>null</code>).
 	 */
-	HideOperation hideView(ViewController viewController,
+	HideOperation hideView(
+			ViewController<? extends ControllableView> viewController,
 			ControllableView newView, Direction direction);
 
 }

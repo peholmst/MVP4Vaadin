@@ -40,16 +40,17 @@ import com.github.peholmst.mvp4vaadin.navigation.ControllableView.HideOperation;
  */
 public class DefaultViewControllerTest {
 
-	DefaultViewController controller;
+	DefaultViewController<ControllableView> controller;
 	ControllableView view;
 	ControllableView view2;
 	ControllableView view3;
-	ViewProvider viewProvider;
-	ViewControllerListener controllerListener;
+	ViewProvider<ControllableView> viewProvider;
+	ViewControllerListener<ControllableView> controllerListener;
 
+	@SuppressWarnings("unchecked")
 	@Before
 	public void setUp() {
-		controller = new DefaultViewController();
+		controller = new DefaultViewController<ControllableView>();
 		view = createMock(ControllableView.class);
 		view2 = createMock(ControllableView.class);
 		view3 = createMock(ControllableView.class);
@@ -81,7 +82,7 @@ public class DefaultViewControllerTest {
 	@Test
 	public void testGoToViewSingleKeyValuePair() {
 		final boolean called[] = new boolean[1];
-		controller = new DefaultViewController() {
+		controller = new DefaultViewController<ControllableView>() {
 			/*
 			 * As the method under test should redirect to this method, we just override it
 			 * to make sure it receives the proper parameters.
@@ -103,7 +104,7 @@ public class DefaultViewControllerTest {
 	@Test
 	public void testGoToViewSingleKeyValuePair_NullKey() {
 		final boolean called[] = new boolean[1];
-		controller = new DefaultViewController() {
+		controller = new DefaultViewController<ControllableView>() {
 			/*
 			 * As the method under test should redirect to this method, we just override it
 			 * to make sure it receives the proper parameters.
@@ -125,7 +126,7 @@ public class DefaultViewControllerTest {
 	@Test
 	public void testGoToViewNoUserData() {
 		final boolean called[] = new boolean[1];
-		controller = new DefaultViewController() {
+		controller = new DefaultViewController<ControllableView>() {
 			/*
 			 * As the method under test should redirect to this method, we just override it
 			 * to make sure it receives the proper parameters.
@@ -147,7 +148,7 @@ public class DefaultViewControllerTest {
 	@Test
 	public void testGoToFirstView() {
 		final boolean called[] = new boolean[1];
-		controller = new DefaultViewController() {
+		controller = new DefaultViewController<ControllableView>() {
 			/*
 			 * As the method under test should redirect to this method, we just override it
 			 * to make sure it receives the proper parameters.
@@ -178,7 +179,7 @@ public class DefaultViewControllerTest {
 		replay(viewProvider);
 		
 		final boolean called[] = new boolean[1];
-		controller = new DefaultViewController() {
+		controller = new DefaultViewController<ControllableView>() {
 			/*
 			 * As the method under test should redirect to this method, we just override it
 			 * to make sure it receives the proper parameters.
@@ -206,7 +207,7 @@ public class DefaultViewControllerTest {
 		replay(viewProvider);
 
 		final boolean called[] = new boolean[1];
-		controller = new DefaultViewController() {
+		controller = new DefaultViewController<ControllableView>() {
 			/*
 			 * As the method under test should redirect to this method, we just override it
 			 * to make sure it receives the proper parameters.
@@ -237,7 +238,7 @@ public class DefaultViewControllerTest {
 		replay(viewProvider);
 		
 		final boolean called[] = new boolean[1];
-		controller = new DefaultViewController() {
+		controller = new DefaultViewController<ControllableView>() {
 			/*
 			 * As the method under test should redirect to this method, we just override it
 			 * to make sure it receives the proper parameters.

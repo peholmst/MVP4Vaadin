@@ -89,6 +89,11 @@ public class DefaultViewController<V extends ControllableView> implements
 	}
 
 	@Override
+	public boolean isBackwardNavigationPossible() {
+		return indexOfCurrentView > 0;
+	}
+	
+	@Override
 	public boolean goForward() {
 		// TODO Implement forward navigation
 		return false;

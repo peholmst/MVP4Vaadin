@@ -77,10 +77,22 @@ public interface ViewController<V extends ControllableView> extends
 	 * @see ControllableView#hideView(ViewController, ControllableView,
 	 *      Direction)
 	 * @see #getTrail()
+	 * @see #isForwardNavigationPossible()
 	 * @return true if the current view was changed as a result of this method
 	 *         call, false if not (or if there are no views at all).
 	 */
 	boolean goBack();
+	
+	/**
+	 * Checks if backward navigation is possible, i.e. that there is at least one
+	 * view below the current view in the stack.
+	 * 
+	 * @see #getCurrentView()
+	 * @see #getTrail()
+	 * @see #goBack()
+	 * @return true if backward navigation is possible, false if not.
+	 */
+	boolean isBackwardNavigationPossible();
 
 	/**
 	 * Attempts to hide the current view and go forward to the next view in the

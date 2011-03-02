@@ -44,13 +44,13 @@ public class DefaultViewController<V extends ControllableView> implements
 
 	private ViewProvider<V> viewProvider;
 
-	// Protected access to make unit testing easier
+	// Package access to make unit testing easier
 
-	protected V currentView;
+	V currentView;
 
-	protected int indexOfCurrentView = -1;
+	int indexOfCurrentView = -1;
 
-	protected Stack<V> viewStack = new Stack<V>();
+	Stack<V> viewStack = new Stack<V>();
 
 	@Override
 	public V getCurrentView() {

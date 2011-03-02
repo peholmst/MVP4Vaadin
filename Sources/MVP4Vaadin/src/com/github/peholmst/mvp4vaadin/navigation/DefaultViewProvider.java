@@ -35,8 +35,8 @@ public class DefaultViewProvider<V extends ControllableView> implements
 
 	private static final long serialVersionUID = -3278782991118186145L;
 
-	// Protected access to make unit testing easier
-	protected Map<String, V> viewMap = new HashMap<String, V>();
+	// Package access to make unit testing easier
+	Map<String, V> viewMap = new HashMap<String, V>();
 
 	/**
 	 * Adds the specified view to the view provider, using the view's class name

@@ -30,10 +30,12 @@ public class NestedControllersMaster<V extends ControllableView> implements
 
 	private static final long serialVersionUID = 7878176235648881833L;
 
-	// Protected visibility to make unit testing easier
-	protected Stack<ViewController<V>> controllerStack = new Stack<ViewController<V>>();
+	// TODO Add logging!
 	
-	protected ViewControllerListener<V> listener = new ViewControllerListener<V>() {
+	// Package visibility to make unit testing easier
+	Stack<ViewController<V>> controllerStack = new Stack<ViewController<V>>();
+	
+	ViewControllerListener<V> listener = new ViewControllerListener<V>() {
 
 		private static final long serialVersionUID = 5278881787281496864L;
 
@@ -62,6 +64,98 @@ public class NestedControllersMaster<V extends ControllableView> implements
 		}
 	}
 	
+	/**
+	 * 
+	 * @author petter
+	 *
+	 * @param <V>
+	 */
+	protected static class TraceElement<V extends ControllableView> {
+		private final ViewController<V> controller;
+		private final V view;
+		
+		/**
+		 * 
+		 * @param controller
+		 */
+		public TraceElement(ViewController<V> controller) {
+			this.controller = controller;
+			this.view = null;
+		}
+		
+		/**
+		 * 
+		 * @param view
+		 */
+		public TraceElement(V view) {
+			this.view = view;
+			this.controller = null;
+		}
+		
+		/**
+		 * @return the controller
+		 */
+		public ViewController<V> getController() {
+			return controller;
+		}
+		
+		/**
+		 * @return the view
+		 */
+		public V getView() {
+			return view;
+		}
+	}
+	
+	/**
+	 * 
+	 * @author Petter Holmström
+	 *
+	 * @param <V>
+	 */
+	protected interface ControllerVisitor<V extends ControllableView> {
+		
+		/**
+		 * 
+		 * @param controller
+		 * @param trace
+		 * @return true to continue with the next controller, false to abort and return from {@link NestedControllersMaster#visitControllers(ControllerVisitor)} immediately.
+		 */
+		boolean visitController(ViewController<V> controller, Stack<TraceElement<V>> trace);
+	}
+
+	/**
+	 * 
+	 * @param visitor
+	 */
+	protected void visitControllers(ControllerVisitor<V> visitor) {
+		if (getToplevelController() != null) {			
+			doVisitController(visitor, getToplevelController(), new Stack<TraceElement<V>>());
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	private boolean doVisitController(ControllerVisitor<V> visitor, ViewController<V> controller, Stack<TraceElement<V>> trace) {
+		trace.push(new TraceElement<V>(controller));
+		if (!visitor.visitController(controller, (Stack<TraceElement<V>>) trace.clone())) {
+			return false;
+		}
+		for (V openView : controller.getTrail()) {
+			if (openView instanceof ControllableViewWithEmbeddedController) {
+				ControllableViewWithEmbeddedController<V> viewWithController = (ControllableViewWithEmbeddedController<V>) openView;
+				if (viewWithController.getEmbeddedController() != null) {
+					trace.push(new TraceElement<V>(openView));
+					if (!doVisitController(visitor, viewWithController.getEmbeddedController(), trace)) {
+						return false;
+					}
+					trace.pop();
+				}
+			}
+		}
+		trace.pop();
+		return true;
+	}
+	
 	private void makeTopController(ViewController<V> controller) {
 		while (!controllerStack.isEmpty() && controllerStack.peek() != controller) {
 			controllerStack.pop().removeListener(listener);
@@ -84,6 +178,14 @@ public class NestedControllersMaster<V extends ControllableView> implements
 		if (viewController != null) {
 			controllerStack.push(viewController).addListener(listener);
 		}
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public ViewController<V> getToplevelController() {
+		return (controllerStack.isEmpty() ? null : controllerStack.firstElement());
 	}
 
 	/**

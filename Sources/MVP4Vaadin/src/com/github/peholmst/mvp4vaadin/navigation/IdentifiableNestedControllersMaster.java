@@ -15,22 +15,122 @@
  */
 package com.github.peholmst.mvp4vaadin.navigation;
 
+import java.util.Stack;
+
 /**
- * @author Petter Holmström
+ * TODO Document me!
  * 
+ * @author Petter Holmström
+ * @since 1.0
  */
-public class IdentifiableNestedControllersMaster<V extends IdentifiableControllableView> extends NestedControllersMaster<V> {
+public class IdentifiableNestedControllersMaster<V extends IdentifiableControllableView>
+		extends NestedControllersMaster<V> {
 
 	// TODO This is a stub, implement me!
+
+	// TODO Add logging!
 	
 	private static final long serialVersionUID = 2826839632930996105L;
 
-	public boolean hasOpenIdentifiableView(String viewIdentifier) {
-		return false;
+	/**
+	 * Checks if any of the nested controllers contain a view with the specified
+	 * view identifier.
+	 * 
+	 * @see IdentifiableViewController#containsIdentifiableView(String)
+	 * 
+	 * @param viewIdentifier
+	 *            the identifier to look for (must not be <code>null</code>).
+	 * @return true if a view was found, false if not.
+	 */
+	public boolean hasOpenIdentifiableView(final String viewIdentifier) {
+		if (viewIdentifier == null) {
+			throw new IllegalArgumentException("null viewIdentifier");
+		}
+		final boolean[] found = new boolean[0];
+		visitControllers(new ControllerVisitor<V>() {
+
+			@Override
+			public boolean visitController(ViewController<V> controller,
+					Stack<TraceElement<V>> trace) {
+				if (controller instanceof IdentifiableViewController) {
+					if (((IdentifiableViewController<V>) controller)
+							.containsIdentifiableView(viewIdentifier)) {
+						found[0] = true;
+						return false;
+					}
+				}
+				return true;
+			}
+		});
+		return found[0];
 	}
-	
-	public boolean switchToIdentifiableView(String viewIdentifier) {
-		return false;
+
+	/**
+	 * 
+	 * @param viewIdentifier
+	 * @return true if the switch was successful, false if not.
+	 */
+	public boolean switchToIdentifiableView(final String viewIdentifier)
+			throws Exception {
+		if (viewIdentifier == null) {
+			throw new IllegalArgumentException("null viewIdentifier");
+		}
+		final boolean[] viewChanged = new boolean[0];
+		viewChanged[0] = true;
+		visitControllers(new ControllerVisitor<V>() {
+
+			@Override
+			public boolean visitController(ViewController<V> controller,
+					Stack<TraceElement<V>> trace) {
+				if (controller instanceof IdentifiableViewController) {
+					IdentifiableViewController<V> ivc = (IdentifiableViewController<V>) controller;
+					if (ivc.containsIdentifiableView(viewIdentifier)) {
+						if (!ivc.goToIdentifiableView(viewIdentifier)) {
+							// The view did not change
+							viewChanged[0] = false;
+						} else {
+							// Now the controller has moved to the view. Now we have
+							// to make sure the controller becomes the active controller
+							
+							// The topmost element in the trace stack is the controller itself,
+							// so we can just pop it.
+							trace.pop();
+							while (getActiveViewController() != ivc) {
+								if (trace.isEmpty()) {
+									// The trace is empty and the controller is still not the active controller
+									// => the switch failed.
+									viewChanged[0] = false;
+									break;
+								}
+								// This should always be a view 
+								TraceElement<V> viewElement = trace.pop();
+								if (viewElement.getView() == null) {
+									throw new IllegalStateException("No view found in the stack where one was expected");
+								}
+								if (trace.isEmpty()) {
+									throw new IllegalStateException("The stack is empty when it should contain at least one element");
+								}
+								// Now pop the view's controller
+								TraceElement<V> controllerElement = trace.pop();
+								if (controllerElement.getController() == null) {
+									throw new IllegalStateException("No controller found in the stack where one was expected");
+								}
+								// Navigate to the view
+								controllerElement.getController().goToView(viewElement.getView());
+								if (controllerElement.getController().getCurrentView() != viewElement.getView()) {
+									// We could not go to the desired view => the switch failed
+									viewChanged[0] = false;
+									break;
+								}
+							}							
+						}
+						return false;
+					}
+				}
+				return true;
+			}
+		});
+		return viewChanged[0];
 	}
-	
+
 }

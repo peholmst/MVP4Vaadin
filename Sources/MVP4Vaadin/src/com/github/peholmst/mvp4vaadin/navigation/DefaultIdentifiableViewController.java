@@ -52,7 +52,7 @@ public class DefaultIdentifiableViewController<V extends IdentifiableControllabl
 			return false;
 		}
 		for (V view : viewStack) {
-			if (view.getViewIdentifier().endsWith(viewIdentifier)) {
+			if (view.getViewIdentifier().equals(viewIdentifier)) {
 				return goToView(view);
 			}
 		}

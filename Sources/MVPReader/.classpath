@@ -3,7 +3,7 @@
 	<classpathentry kind="var" path="VAADIN_DOWNLOAD/gwt-user/2.1.1/gwt-user.jar"/>
 	<classpathentry kind="var" path="VAADIN_DOWNLOAD/gwt-dev/2.1.1/gwt-dev.jar"/>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.launching.macosx.MacOSXType/JVM 1.6.0 (MacOS X Default)">
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6">
 		<attributes>
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>

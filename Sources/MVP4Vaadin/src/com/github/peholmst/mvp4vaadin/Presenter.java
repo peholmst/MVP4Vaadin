@@ -15,7 +15,6 @@
  */
 package com.github.peholmst.mvp4vaadin;
 
-
 /**
  * This is an abstract base class for Presenters in the Model-View-Presenter
  * (MVP) pattern. It has been designed to work together with views that extend
@@ -46,7 +45,7 @@ public abstract class Presenter<V extends View> implements java.io.Serializable 
 
 	private static final long serialVersionUID = -7842839205919502161L;
 
-	private final V view;
+	private V view;
 
 	/**
 	 * Creates a new <code>Presenter</code> for the specified view. Any
@@ -67,11 +66,33 @@ public abstract class Presenter<V extends View> implements java.io.Serializable 
 	}
 
 	/**
-	 * Gets the view that uses this presenter.
+	 * Creates a new <code>Presenter</code> without a view. A view must be
+	 * specified using the {@link #setView(View)} method.
+	 */
+	public Presenter() {
+
+	}
+
+	/**
+	 * Sets the view for this presenter.
+	 * 
+	 * @param view
+	 *            the view to set.
+	 */
+	public final void setView(V view) {
+		this.view = view;
+	}
+
+	/**
+	 * Gets the view that uses this presenter. If no view has been set, an
+	 * exception is thrown.
 	 * 
 	 * @return the view instance (never <code>null</code>).
 	 */
 	protected final V getView() {
+		if (view == null) {
+			throw new IllegalStateException("View has not been set yet");
+		}
 		return view;
 	}
 

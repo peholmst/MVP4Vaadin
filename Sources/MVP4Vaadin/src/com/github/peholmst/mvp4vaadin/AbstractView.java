@@ -42,12 +42,7 @@ public abstract class AbstractView<V extends View, P extends Presenter<V>>
 
 	private LinkedList<ViewListener> listenerList = new LinkedList<ViewListener>();
 
-	/**
-	 * Returns a logger that can be used to log important information.
-	 * 
-	 * @return a logger instance, never <code>null</code>.
-	 */
-	protected Logger getLogger() {
+	private Logger getLogger() {
 		if (logger == null) {
 			logger = Logger.getLogger(getClass().getName());
 		}

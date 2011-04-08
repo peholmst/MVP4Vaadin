@@ -42,21 +42,15 @@ import java.util.Map;
  * 
  * @author Petter Holmström
  * @since 1.0
- * @param <V>
- *            the super interface of all views handled by this controller. In
- *            most cases this is <code>ControllableView</code>, but if you want
- *            to extend MVP4Vaadin and use a more specialized view interface,
- *            you can specify it here as well.
  */
-public interface ViewController<V extends ControllableView> extends
-		java.io.Serializable {
+public interface ViewController extends java.io.Serializable {
 	/**
 	 * Gets the current view, if available. If the stack is empty,
 	 * <code>null</code> is returned.
 	 * 
 	 * @return the current view, or <code>null</code> if the stack is empty.
 	 */
-	V getCurrentView();
+	ControllableView getCurrentView();
 
 	/**
 	 * Gets the first view, if available. This is the bottom element in the
@@ -65,7 +59,7 @@ public interface ViewController<V extends ControllableView> extends
 	 * 
 	 * @return the first view, or <code>null</code> if the stack is empty.
 	 */
-	V getFirstView();
+	ControllableView getFirstView();
 
 	/**
 	 * Attempts to hide the current view and go back to the previous view in the
@@ -82,10 +76,10 @@ public interface ViewController<V extends ControllableView> extends
 	 *         call, false if not (or if there are no views at all).
 	 */
 	boolean goBack();
-	
+
 	/**
-	 * Checks if backward navigation is possible, i.e. that there is at least one
-	 * view below the current view in the stack.
+	 * Checks if backward navigation is possible, i.e. that there is at least
+	 * one view below the current view in the stack.
 	 * 
 	 * @see #getCurrentView()
 	 * @see #getTrail()
@@ -150,7 +144,7 @@ public interface ViewController<V extends ControllableView> extends
 	 * @return the view provider, or <code>null</code> if none has been
 	 *         specified.
 	 */
-	ViewProvider<V> getViewProvider();
+	ViewProvider getViewProvider();
 
 	/**
 	 * Sets or clears the view provider for this controller.
@@ -160,7 +154,7 @@ public interface ViewController<V extends ControllableView> extends
 	 * @param viewProvider
 	 *            the view provider to set, may be <code>null</code>.
 	 */
-	void setViewProvider(ViewProvider<V> viewProvider);
+	void setViewProvider(ViewProvider viewProvider);
 
 	/**
 	 * Same as calling {@link #goToView(ControllableView, Map) goToView(view,
@@ -171,7 +165,7 @@ public interface ViewController<V extends ControllableView> extends
 	 * @return true if the current view was changed as a result of this method
 	 *         call, false if not (or if there are no views at all).
 	 */
-	boolean goToView(V view);
+	boolean goToView(ControllableView view);
 
 	/**
 	 * Does the same as {@link #goToView(ControllableView)}, but fetches the
@@ -206,7 +200,8 @@ public interface ViewController<V extends ControllableView> extends
 	 * @return true if the current view was changed as a result of this method
 	 *         call, false if not (or if there are no views at all).
 	 */
-	boolean goToView(V view, String userDataKey, Object userDataValue);
+	boolean goToView(ControllableView view, String userDataKey,
+			Object userDataValue);
 
 	/**
 	 * Does the same as {@link #goToView(ControllableView, String, Object)}, but
@@ -263,7 +258,7 @@ public interface ViewController<V extends ControllableView> extends
 	 * @return true if the current view was changed as a result of this method
 	 *         call, false if not (or if there are no views at all).
 	 */
-	boolean goToView(V view, Map<String, Object> userData);
+	boolean goToView(ControllableView view, Map<String, Object> userData);
 
 	/**
 	 * Does the same as {@link #goToView(ControllableView, Map)}, but fetches
@@ -298,7 +293,7 @@ public interface ViewController<V extends ControllableView> extends
 	 * @return an unmodifiable list representing the stack, with the bottom most
 	 *         element at index 0.
 	 */
-	List<V> getTrail();
+	List<ControllableView> getTrail();
 
 	/**
 	 * Registers a listener to be notified when the current view is changed. A
@@ -308,7 +303,7 @@ public interface ViewController<V extends ControllableView> extends
 	 * @param listener
 	 *            the listener to add.
 	 */
-	void addListener(ViewControllerListener<V> listener);
+	void addListener(ViewControllerListener listener);
 
 	/**
 	 * Unregisters a listener previously registered using
@@ -320,6 +315,6 @@ public interface ViewController<V extends ControllableView> extends
 	 * @param listener
 	 *            the listener to remove.
 	 */
-	void removeListener(ViewControllerListener<V> listener);
+	void removeListener(ViewControllerListener listener);
 
 }

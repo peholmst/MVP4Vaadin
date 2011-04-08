@@ -31,34 +31,28 @@ import com.github.peholmst.mvp4vaadin.navigation.ControllableView.HideOperation;
  * 
  * @author Petter Holmström
  * @since 1.0
- * @param <V>
- *            the super interface of all views handled by this controller. In
- *            most cases this is <code>ControllableView</code>, but if you want
- *            to extend MVP4Vaadin and use a more specialized view interface,
- *            you can specify it here as well.
  */
-public class DefaultViewController<V extends ControllableView> implements
-		ViewController<V> {
+public class DefaultViewController implements ViewController {
 
 	private static final long serialVersionUID = -8268392494366653976L;
 
-	private ViewProvider<V> viewProvider;
+	private ViewProvider viewProvider;
 
 	// Package access to make unit testing easier
 
-	V currentView;
+	ControllableView currentView;
 
 	int indexOfCurrentView = -1;
 
-	Stack<V> viewStack = new Stack<V>();
+	Stack<ControllableView> viewStack = new Stack<ControllableView>();
 
 	@Override
-	public V getCurrentView() {
+	public ControllableView getCurrentView() {
 		return currentView;
 	}
 
 	@Override
-	public V getFirstView() {
+	public ControllableView getFirstView() {
 		return viewStack.isEmpty() ? null : viewStack.firstElement();
 	}
 
@@ -68,7 +62,7 @@ public class DefaultViewController<V extends ControllableView> implements
 			// There is nothing to go back to
 			return false;
 		}
-		V newView = viewStack.get(indexOfCurrentView - 1);
+		ControllableView newView = viewStack.get(indexOfCurrentView - 1);
 		HideOperation operation = currentView.hideView(this, newView,
 				Direction.BACKWARD);
 		if (operation.equals(HideOperation.PREVENT)) {
@@ -92,7 +86,7 @@ public class DefaultViewController<V extends ControllableView> implements
 	public boolean isBackwardNavigationPossible() {
 		return indexOfCurrentView > 0;
 	}
-	
+
 	@Override
 	public boolean goForward() {
 		// TODO Implement forward navigation
@@ -106,7 +100,7 @@ public class DefaultViewController<V extends ControllableView> implements
 
 	@Override
 	public boolean goToFirstView() {
-		V firstView = getFirstView();
+		ControllableView firstView = getFirstView();
 		if (firstView == null) {
 			return false;
 		} else {
@@ -115,12 +109,12 @@ public class DefaultViewController<V extends ControllableView> implements
 	}
 
 	@Override
-	public ViewProvider<V> getViewProvider() {
+	public ViewProvider getViewProvider() {
 		return viewProvider;
 	}
 
 	@Override
-	public void setViewProvider(ViewProvider<V> viewProvider) {
+	public void setViewProvider(ViewProvider viewProvider) {
 		this.viewProvider = viewProvider;
 	}
 
@@ -133,17 +127,18 @@ public class DefaultViewController<V extends ControllableView> implements
 	 * @throws IllegalStateException
 	 * @throws IllegalArgumentException
 	 */
-	protected V getViewFromProvider(String viewId, Map<String, Object> userData)
-			throws IllegalStateException, IllegalArgumentException {
+	protected ControllableView getViewFromProvider(String viewId,
+			Map<String, Object> userData) throws IllegalStateException,
+			IllegalArgumentException {
 		if (viewId == null) {
 			throw new IllegalArgumentException("null viewId");
 		}
 		if (getViewProvider() == null) {
 			throw new IllegalStateException("null viewProvider");
 		}
-		V view = null;
+		ControllableView view = null;
 		if (getViewProvider() instanceof InitializingViewProvider) {
-			view = ((InitializingViewProvider<V>) getViewProvider()).getView(
+			view = ((InitializingViewProvider) getViewProvider()).getView(
 					viewId, userData);
 		} else {
 			view = getViewProvider().getView(viewId);
@@ -155,7 +150,7 @@ public class DefaultViewController<V extends ControllableView> implements
 	}
 
 	@Override
-	public boolean goToView(V view) {
+	public boolean goToView(ControllableView view) {
 		return goToView(view, null);
 	}
 
@@ -175,7 +170,8 @@ public class DefaultViewController<V extends ControllableView> implements
 	}
 
 	@Override
-	public boolean goToView(V view, String userDataKey, Object userDataValue) {
+	public boolean goToView(ControllableView view, String userDataKey,
+			Object userDataValue) {
 		return goToView(view,
 				buildSimpleUserDataMap(userDataKey, userDataValue));
 	}
@@ -190,7 +186,7 @@ public class DefaultViewController<V extends ControllableView> implements
 	}
 
 	@Override
-	public boolean goToView(V view, Map<String, Object> userData) {
+	public boolean goToView(ControllableView view, Map<String, Object> userData) {
 		if (view == null) {
 			throw new IllegalArgumentException("null view");
 		}
@@ -200,7 +196,7 @@ public class DefaultViewController<V extends ControllableView> implements
 			return false;
 		}
 
-		V oldView = currentView;
+		ControllableView oldView = currentView;
 
 		int indexOfNewViewInStack = viewStack.indexOf(view);
 		if (indexOfNewViewInStack != -1) {
@@ -208,7 +204,7 @@ public class DefaultViewController<V extends ControllableView> implements
 			// forward or backward
 			if (indexOfNewViewInStack < indexOfCurrentView) {
 				// We're moving backward
-				V viewToHide = currentView;
+				ControllableView viewToHide = currentView;
 				int indexOfViewToHide = indexOfCurrentView;
 				while (viewToHide != view) {
 					HideOperation operation = viewToHide.hideView(this, view,
@@ -246,7 +242,8 @@ public class DefaultViewController<V extends ControllableView> implements
 			}
 		} else {
 			// We're adding a new view to the stack.
-			// If the current view is not the topmost view, we should clear the stack.
+			// If the current view is not the topmost view, we should clear the
+			// stack.
 			if (!viewStack.isEmpty() && currentView != viewStack.peek()) {
 				do {
 					viewStack.pop();
@@ -259,9 +256,10 @@ public class DefaultViewController<V extends ControllableView> implements
 		return true;
 	}
 
-	protected void setCurrentView(V view, int indexOfCurrentView,
-			Map<String, Object> userData, Direction direction) {
-		V oldView = currentView;
+	protected void setCurrentView(ControllableView view,
+			int indexOfCurrentView, Map<String, Object> userData,
+			Direction direction) {
+		ControllableView oldView = currentView;
 		currentView = view;
 		this.indexOfCurrentView = indexOfCurrentView;
 		view.showView(this, userData, oldView, direction);
@@ -276,11 +274,11 @@ public class DefaultViewController<V extends ControllableView> implements
 	}
 
 	@Override
-	public List<V> getTrail() {
+	public List<ControllableView> getTrail() {
 		return Collections.unmodifiableList(viewStack);
 	}
 
-	private final LinkedList<ViewControllerListener<V>> listenerList = new LinkedList<ViewControllerListener<V>>();
+	private final LinkedList<ViewControllerListener> listenerList = new LinkedList<ViewControllerListener>();
 
 	/**
 	 * TODO Document me!
@@ -291,30 +289,31 @@ public class DefaultViewController<V extends ControllableView> implements
 	 * @param newViewIsTopMost
 	 */
 	@SuppressWarnings("unchecked")
-	protected void fireCurrentViewChanged(V oldView, V newView,
-			Direction direction, boolean newViewIsTopMost) {
+	protected void fireCurrentViewChanged(ControllableView oldView,
+			ControllableView newView, Direction direction,
+			boolean newViewIsTopMost) {
 		/*
 		 * Create a clone of the listener list. This way, we prevent weird
 		 * situations if any of the listeners register new listeners or remove
 		 * existing ones.
 		 */
-		LinkedList<ViewControllerListener<V>> clonedList = (LinkedList<ViewControllerListener<V>>) listenerList
+		LinkedList<ViewControllerListener> clonedList = (LinkedList<ViewControllerListener>) listenerList
 				.clone();
-		for (ViewControllerListener<V> listener : clonedList) {
+		for (ViewControllerListener listener : clonedList) {
 			listener.currentViewChanged(this, oldView, newView, direction,
 					newViewIsTopMost);
 		}
 	}
 
 	@Override
-	public void addListener(ViewControllerListener<V> listener) {
+	public void addListener(ViewControllerListener listener) {
 		if (listener != null) {
 			listenerList.add(listener);
 		}
 	}
 
 	@Override
-	public void removeListener(ViewControllerListener<V> listener) {
+	public void removeListener(ViewControllerListener listener) {
 		if (listener != null) {
 			listenerList.remove(listener);
 		}

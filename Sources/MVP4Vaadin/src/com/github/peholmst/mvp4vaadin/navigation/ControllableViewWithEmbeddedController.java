@@ -21,12 +21,9 @@ package com.github.peholmst.mvp4vaadin.navigation;
  * {@link NestedControllersMaster} class for more information.
  * 
  * @author Petter Holmström
- * 
- * @param <V>
- *            the type of views that are handled by the embedded controller.
  */
-public interface ControllableViewWithEmbeddedController<V extends ControllableView>
-		extends ControllableView {
+public interface ControllableViewWithEmbeddedController extends
+		ControllableView {
 
 	/**
 	 * Gets the view controller that is embedded into this particular view.
@@ -34,6 +31,6 @@ public interface ControllableViewWithEmbeddedController<V extends ControllableVi
 	 * @return the embedded controller, or <code>null</code> if the view
 	 *         currently has none.
 	 */
-	ViewController<V> getEmbeddedController();
+	ViewController getEmbeddedController();
 
 }

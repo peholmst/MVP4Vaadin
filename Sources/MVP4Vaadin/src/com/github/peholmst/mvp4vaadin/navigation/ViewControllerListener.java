@@ -21,13 +21,8 @@ package com.github.peholmst.mvp4vaadin.navigation;
  * 
  * @author Petter Holmström
  * @since 1.0
- * @param <V>
- *            the super interface of the views handled by the view controller.
- *            In most cases this is <code>ControllableView</code>, but you are
- *            free to use your own custom interface.
  */
-public interface ViewControllerListener<V extends ControllableView> extends
-		java.io.Serializable {
+public interface ViewControllerListener extends java.io.Serializable {
 
 	/**
 	 * This method is called by a {@link ViewController} instance when its
@@ -50,7 +45,8 @@ public interface ViewControllerListener<V extends ControllableView> extends
 	 *            stack, false if there are views on top of <code>newView</code>
 	 *            (allowing forward navigation).
 	 */
-	void currentViewChanged(ViewController<V> source, V oldView, V newView,
-			Direction direction, boolean newViewIsTopMost);
+	void currentViewChanged(ViewController source, ControllableView oldView,
+			ControllableView newView, Direction direction,
+			boolean newViewIsTopMost);
 
 }

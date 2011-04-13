@@ -23,12 +23,8 @@ package com.github.peholmst.mvp4vaadin.navigation;
  * @see IdentifiableControllableView
  * 
  * @author Petter Holmström
- * 
- * @param <V>
- *            the super interface of all views handled by this controller.
  */
-public interface IdentifiableViewController<V extends IdentifiableControllableView>
-		extends ViewController<V> {
+public interface IdentifiableViewController extends ViewController {
 
 	/**
 	 * Checks if there is a view somewhere in the stack that has the given

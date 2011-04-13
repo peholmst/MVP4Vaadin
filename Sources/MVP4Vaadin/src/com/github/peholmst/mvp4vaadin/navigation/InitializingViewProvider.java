@@ -24,13 +24,8 @@ import java.util.Map;
  * 
  * @author Petter Holmström
  * @since 1.0
- * @param <V>
- *            the super interface of the views provided by this view provider.
- *            In most cases this is <code>ControllableView</code>, but you are
- *            free to use your own custom interface.
  */
-public interface InitializingViewProvider<V extends ControllableView> extends
-		ViewProvider<V> {
+public interface InitializingViewProvider extends ViewProvider {
 
 	/**
 	 * Gets the view with the specified ID. If the ID is null, <code>null</code>
@@ -53,5 +48,5 @@ public interface InitializingViewProvider<V extends ControllableView> extends
 	 *            a map of user specified data, may be <code>null</code>.
 	 * @return the view, or <code>null</code> if not found.
 	 */
-	V getView(String viewId, Map<String, Object> userData);
+	ControllableView getView(String viewId, Map<String, Object> userData);
 }

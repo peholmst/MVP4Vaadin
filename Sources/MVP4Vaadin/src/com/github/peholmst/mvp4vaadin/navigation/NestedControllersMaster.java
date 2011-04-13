@@ -17,135 +17,141 @@ package com.github.peholmst.mvp4vaadin.navigation;
 
 import java.util.Stack;
 
-
 /**
  * TODO Document me!
  * 
  * @author Petter Holmström
  * 
- * @param <V>
  */
-public class NestedControllersMaster<V extends ControllableView> implements
-		java.io.Serializable {
+public class NestedControllersMaster implements java.io.Serializable {
 
 	private static final long serialVersionUID = 7878176235648881833L;
 
 	// TODO Add logging!
-	
+
 	// Package visibility to make unit testing easier
-	Stack<ViewController<V>> controllerStack = new Stack<ViewController<V>>();
-	
-	ViewControllerListener<V> listener = new ViewControllerListener<V>() {
+	Stack<ViewController> controllerStack = new Stack<ViewController>();
+
+	ViewControllerListener listener = new ViewControllerListener() {
 
 		private static final long serialVersionUID = 5278881787281496864L;
 
-		@SuppressWarnings("unchecked")
 		@Override
-		public void currentViewChanged(ViewController<V> source, V oldView,
-				V newView, Direction direction, boolean newViewIsTopMost) {
+		public void currentViewChanged(ViewController source, ControllableView oldView,
+				ControllableView newView, Direction direction, boolean newViewIsTopMost) {
 			// Start by making the source the active controller
 			makeTopController(source);
 			if (newView instanceof ControllableViewWithEmbeddedController) {
-				// If the source's current page has an embedded controller, make that controller
-				// the active controller. If that controller's current page also has an embedded controller,
+				// If the source's current page has an embedded controller, make
+				// that controller
+				// the active controller. If that controller's current page also
+				// has an embedded controller,
 				// recursivly add it to the stack, etc.
-				addControllerToStack((ControllableViewWithEmbeddedController<V>) newView);
+				addControllerToStack((ControllableViewWithEmbeddedController) newView);
 			}
 		}
 	};
-	
-	@SuppressWarnings("unchecked")
-	private void addControllerToStack(ControllableViewWithEmbeddedController<V> viewWithController) {
+
+	private void addControllerToStack(
+			ControllableViewWithEmbeddedController viewWithController) {
 		if (viewWithController.getEmbeddedController() != null) {
-			controllerStack.push(viewWithController.getEmbeddedController()).addListener(listener);
+			controllerStack.push(viewWithController.getEmbeddedController())
+					.addListener(listener);
 			if (viewWithController.getEmbeddedController().getCurrentView() instanceof ControllableViewWithEmbeddedController) {
-				addControllerToStack((ControllableViewWithEmbeddedController<V>) viewWithController.getEmbeddedController().getCurrentView());
+				addControllerToStack((ControllableViewWithEmbeddedController) viewWithController
+						.getEmbeddedController().getCurrentView());
 			}
 		}
 	}
-	
+
 	/**
 	 * 
 	 * @author petter
-	 *
-	 * @param <V>
+	 * 
 	 */
-	protected static class TraceElement<V extends ControllableView> {
-		private final ViewController<V> controller;
-		private final V view;
-		
+	protected static class TraceElement {
+		private final ViewController controller;
+		private final ControllableView view;
+
 		/**
 		 * 
 		 * @param controller
 		 */
-		public TraceElement(ViewController<V> controller) {
+		public TraceElement(ViewController controller) {
 			this.controller = controller;
 			this.view = null;
 		}
-		
+
 		/**
 		 * 
 		 * @param view
 		 */
-		public TraceElement(V view) {
+		public TraceElement(ControllableView view) {
 			this.view = view;
 			this.controller = null;
 		}
-		
+
 		/**
 		 * @return the controller
 		 */
-		public ViewController<V> getController() {
+		public ViewController getController() {
 			return controller;
 		}
-		
+
 		/**
 		 * @return the view
 		 */
-		public V getView() {
+		public ControllableView getView() {
 			return view;
 		}
 	}
-	
+
 	/**
 	 * 
 	 * @author Petter Holmström
-	 *
-	 * @param <V>
+	 * 
 	 */
-	protected interface ControllerVisitor<V extends ControllableView> {
-		
+	protected interface ControllerVisitor {
+
 		/**
 		 * 
 		 * @param controller
 		 * @param trace
-		 * @return true to continue with the next controller, false to abort and return from {@link NestedControllersMaster#visitControllers(ControllerVisitor)} immediately.
+		 * @return true to continue with the next controller, false to abort and
+		 *         return from
+		 *         {@link NestedControllersMaster#visitControllers(ControllerVisitor)}
+		 *         immediately.
 		 */
-		boolean visitController(ViewController<V> controller, Stack<TraceElement<V>> trace);
+		boolean visitController(ViewController controller,
+				Stack<TraceElement> trace);
 	}
 
 	/**
 	 * 
 	 * @param visitor
 	 */
-	protected void visitControllers(ControllerVisitor<V> visitor) {
-		if (getToplevelController() != null) {			
-			doVisitController(visitor, getToplevelController(), new Stack<TraceElement<V>>());
+	protected void visitControllers(ControllerVisitor visitor) {
+		if (getToplevelController() != null) {
+			doVisitController(visitor, getToplevelController(),
+					new Stack<TraceElement>());
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	private boolean doVisitController(ControllerVisitor<V> visitor, ViewController<V> controller, Stack<TraceElement<V>> trace) {
-		trace.push(new TraceElement<V>(controller));
-		if (!visitor.visitController(controller, (Stack<TraceElement<V>>) trace.clone())) {
+	private boolean doVisitController(ControllerVisitor visitor,
+			ViewController controller, Stack<TraceElement> trace) {
+		trace.push(new TraceElement(controller));
+		if (!visitor.visitController(controller,
+				(Stack<TraceElement>) trace.clone())) {
 			return false;
 		}
-		for (V openView : controller.getTrail()) {
+		for (ControllableView openView : controller.getTrail()) {
 			if (openView instanceof ControllableViewWithEmbeddedController) {
-				ControllableViewWithEmbeddedController<V> viewWithController = (ControllableViewWithEmbeddedController<V>) openView;
+				ControllableViewWithEmbeddedController viewWithController = (ControllableViewWithEmbeddedController) openView;
 				if (viewWithController.getEmbeddedController() != null) {
-					trace.push(new TraceElement<V>(openView));
-					if (!doVisitController(visitor, viewWithController.getEmbeddedController(), trace)) {
+					trace.push(new TraceElement(openView));
+					if (!doVisitController(visitor,
+							viewWithController.getEmbeddedController(), trace)) {
 						return false;
 					}
 					trace.pop();
@@ -155,21 +161,23 @@ public class NestedControllersMaster<V extends ControllableView> implements
 		trace.pop();
 		return true;
 	}
-	
-	private void makeTopController(ViewController<V> controller) {
-		while (!controllerStack.isEmpty() && controllerStack.peek() != controller) {
+
+	private void makeTopController(ViewController controller) {
+		while (!controllerStack.isEmpty()
+				&& controllerStack.peek() != controller) {
 			controllerStack.pop().removeListener(listener);
 		}
 		if (controllerStack.isEmpty()) {
-			throw new IllegalStateException("The controller stack is empty! This is a bug that should be reported!");
+			throw new IllegalStateException(
+					"The controller stack is empty! This is a bug that should be reported!");
 		}
 	}
-	
+
 	/**
 	 * 
 	 * @param viewController
 	 */
-	public void setToplevelController(ViewController<V> viewController) {
+	public void setToplevelController(ViewController viewController) {
 		// Clear the stack
 		while (!controllerStack.isEmpty()) {
 			controllerStack.pop().removeListener(listener);
@@ -179,34 +187,37 @@ public class NestedControllersMaster<V extends ControllableView> implements
 			controllerStack.push(viewController).addListener(listener);
 		}
 	}
-	
+
 	/**
 	 * 
 	 * @return
 	 */
-	public ViewController<V> getToplevelController() {
-		return (controllerStack.isEmpty() ? null : controllerStack.firstElement());
+	public ViewController getToplevelController() {
+		return (controllerStack.isEmpty() ? null : controllerStack
+				.firstElement());
 	}
 
 	/**
 	 * Gets the view controller that is currently active.
 	 * 
-	 * @return the active view controller, or <code>null</code> if there are no controllers in the stack at all.
+	 * @return the active view controller, or <code>null</code> if there are no
+	 *         controllers in the stack at all.
 	 */
-	public ViewController<V> getActiveViewController() {
+	public ViewController getActiveViewController() {
 		return (controllerStack.isEmpty() ? null : controllerStack.peek());
 	}
-	
+
 	/**
 	 * TODO Test me and document me!
+	 * 
 	 * @return
 	 */
 	public boolean goBack() {
 		if (controllerStack.isEmpty()) {
 			throw new IllegalStateException("No active controller");
 		}
-		for (int i = controllerStack.size() -1; i >= 0; --i) {
-			ViewController<V> controller = controllerStack.get(i);
+		for (int i = controllerStack.size() - 1; i >= 0; --i) {
+			ViewController controller = controllerStack.get(i);
 			if (controller.isBackwardNavigationPossible()) {
 				return controller.goBack();
 			}

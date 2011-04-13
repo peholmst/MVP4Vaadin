@@ -22,24 +22,22 @@ package com.github.peholmst.mvp4vaadin.navigation;
  * 
  * @author Petter Holmström
  * @since 1.0
- * @param <V>
- *            the super interface of all views handled by this controller.
  */
-public class DefaultIdentifiableViewController<V extends IdentifiableControllableView>
-		extends DefaultViewController<V> implements
-		IdentifiableViewController<V> {
+public class DefaultIdentifiableViewController extends DefaultViewController
+		implements IdentifiableViewController {
 
 	private static final long serialVersionUID = -6566446894265364755L;
 
 	// TODO Test me!
-	
+
 	@Override
 	public boolean containsIdentifiableView(String viewIdentifier) {
 		if (viewStack.isEmpty()) {
 			return false;
 		}
-		for (V view : viewStack) {
-			if (view.getViewIdentifier().equals(viewIdentifier)) {
+		for (ControllableView view : viewStack) {
+			if (((IdentifiableControllableView) view).getViewIdentifier()
+					.equals(viewIdentifier)) {
 				return true;
 			}
 		}
@@ -51,8 +49,9 @@ public class DefaultIdentifiableViewController<V extends IdentifiableControllabl
 		if (viewStack.isEmpty()) {
 			return false;
 		}
-		for (V view : viewStack) {
-			if (view.getViewIdentifier().equals(viewIdentifier)) {
+		for (ControllableView view : viewStack) {
+			if (((IdentifiableControllableView) view).getViewIdentifier()
+					.equals(viewIdentifier)) {
 				return goToView(view);
 			}
 		}

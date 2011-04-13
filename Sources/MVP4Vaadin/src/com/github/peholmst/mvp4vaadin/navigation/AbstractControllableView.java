@@ -35,7 +35,7 @@ public abstract class AbstractControllableView<V extends ControllableView, P ext
 
 	private static final long serialVersionUID = 6769129811745901667L;
 
-	private ViewController<? extends ControllableView> viewController;
+	private ViewController viewController;
 
 	/**
 	 * Creates a new <code>AbstractControllableView</code>, but does NOT
@@ -60,7 +60,7 @@ public abstract class AbstractControllableView<V extends ControllableView, P ext
 	}
 
 	@Override
-	public ViewController<? extends ControllableView> getViewController() {
+	public ViewController getViewController() {
 		return viewController;
 	}
 
@@ -74,8 +74,7 @@ public abstract class AbstractControllableView<V extends ControllableView, P ext
 	 * viewShown(...)} on the presenter.
 	 */
 	@Override
-	public final void showView(
-			ViewController<? extends ControllableView> viewController,
+	public final void showView(ViewController viewController,
 			Map<String, Object> userData, ControllableView oldView,
 			Direction direction) {
 		if (getViewController() != null
@@ -110,8 +109,7 @@ public abstract class AbstractControllableView<V extends ControllableView, P ext
 	 * <code>null</code>.
 	 */
 	@Override
-	public final HideOperation hideView(
-			ViewController<? extends ControllableView> viewController,
+	public final HideOperation hideView(ViewController viewController,
 			ControllableView newView, Direction direction) {
 		if (getViewController() == null
 				|| getViewController() != viewController) {

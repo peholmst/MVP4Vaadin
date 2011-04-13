@@ -22,11 +22,10 @@ import com.github.peholmst.mvp4vaadin.navigation.Direction;
 import com.github.peholmst.mvp4vaadin.navigation.ViewController;
 import com.github.peholmst.mvp4vaadin.navigation.ViewControllerListener;
 import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.BaseTheme;
 
@@ -42,22 +41,23 @@ import com.vaadin.ui.themes.BaseTheme;
  * As the views change in the controller, the navigation bar will update itself.
  * A click on any of the navigation links will request the view controller to
  * navigate to that particular view.
+ * <p>
+ * The navigation bar extends {@link CssLayout}, which means that you are going to need
+ * to use some CSS to get it to look right.
  * 
  * @author Petter Holmström
  * @since 1.0
- * @param V
- *            the super interface of the views. In most cases this is
- *            <code>ControllableView</code>, but you are free to use your own
- *            interface.
  */
-public class NavigationBar<V extends ControllableView> extends HorizontalLayout implements
-		ViewControllerListener<V> {
+public class NavigationBar extends CssLayout implements ViewControllerListener {
 
-	// TODO Even if forward navigation is possible, the current view should ALWAYS be the last breadcrumb!
-	
+	// TODO Even if forward navigation is possible, the current view should
+	// ALWAYS be the last breadcrumb!
+
+	private static final String BREADCRUMB_ELEMENT = "breadcrumb-element";
+
 	private static final long serialVersionUID = -6803449379545049738L;
 
-	private ViewController<V> viewController;
+	private ViewController viewController;
 
 	/**
 	 * Sets the view controller whose current view will be shown in this view
@@ -66,7 +66,7 @@ public class NavigationBar<V extends ControllableView> extends HorizontalLayout 
 	 * @param viewController
 	 *            the view controller to set.
 	 */
-	public void setViewController(ViewController<V> viewController) {
+	public void setViewController(ViewController viewController) {
 		if (this.viewController != null) {
 			this.viewController.removeListener(this);
 		}
@@ -83,22 +83,22 @@ public class NavigationBar<V extends ControllableView> extends HorizontalLayout 
 	 * 
 	 * @return the view controller, or <code>null</code> if none has been set.
 	 */
-	public ViewController<V> getViewController() {
+	public ViewController getViewController() {
 		return viewController;
 	}
 
 	private void addBreadcrumbsForController() {
 		removeAllComponents();
 		if (getViewController() != null) {
-			for (V v : getViewController().getTrail()) {
+			for (ControllableView v : getViewController().getTrail()) {
 				addBreadcrumbForView(v);
 			}
 		}
 	}
 
 	@Override
-	public void currentViewChanged(ViewController<V> source,
-			V oldView, V newView,
+	public void currentViewChanged(ViewController source,
+			ControllableView oldView, ControllableView newView,
 			Direction direction, boolean newViewIsTopMost) {
 		if (source != viewController) {
 			return;
@@ -108,7 +108,7 @@ public class NavigationBar<V extends ControllableView> extends HorizontalLayout 
 			 * The view is already in the bread crumbs, so we just have to check
 			 * if there are any views at the end that need to be removed
 			 */
-			V lastView = source.getTrail().get(
+			ControllableView lastView = source.getTrail().get(
 					source.getTrail().size() - 1);
 			Iterator<Component> it = components.descendingIterator();
 			while (it.hasNext()) {
@@ -159,7 +159,7 @@ public class NavigationBar<V extends ControllableView> extends HorizontalLayout 
 	 * @param view
 	 *            the view to add (must not be <code>null</code>).
 	 */
-	protected void addBreadcrumbForView(final V view) {
+	protected void addBreadcrumbForView(final ControllableView view) {
 		if (getViewController().getTrail().size() > 1) {
 			Label separator = addViewSeparator();
 			separator.setData(view);
@@ -191,8 +191,9 @@ public class NavigationBar<V extends ControllableView> extends HorizontalLayout 
 		final Button btn = new Button(viewName);
 		btn.setStyleName(BaseTheme.BUTTON_LINK);
 		btn.setSizeUndefined();
+		btn.addStyleName(BREADCRUMB_ELEMENT);
 		addComponent(btn);
-		setComponentAlignment(btn, Alignment.MIDDLE_LEFT);
+		// setComponentAlignment(btn, Alignment.MIDDLE_LEFT);
 		return btn;
 	}
 
@@ -204,8 +205,9 @@ public class NavigationBar<V extends ControllableView> extends HorizontalLayout 
 	protected Label addViewSeparator() {
 		final Label lbl = new Label("»");
 		lbl.setSizeUndefined();
+		lbl.addStyleName(BREADCRUMB_ELEMENT);
 		addComponent(lbl);
-		setComponentAlignment(lbl, Alignment.MIDDLE_LEFT);
+		// setComponentAlignment(lbl, Alignment.MIDDLE_LEFT);
 		return lbl;
 	}
 }

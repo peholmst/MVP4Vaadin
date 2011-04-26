@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.peholmst.mvp4vaadin.navigation;
+package com.github.peholmst.mvp4vaadin.navigation.incubation;
+
+import com.github.peholmst.mvp4vaadin.navigation.ViewController;
 
 /**
  * This is a specialized view controller interface for identifiable views. It

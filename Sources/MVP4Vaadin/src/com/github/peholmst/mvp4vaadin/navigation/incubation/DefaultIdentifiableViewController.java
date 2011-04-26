@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.peholmst.mvp4vaadin.navigation;
+package com.github.peholmst.mvp4vaadin.navigation.incubation;
+
+import com.github.peholmst.mvp4vaadin.navigation.ControllableView;
+import com.github.peholmst.mvp4vaadin.navigation.DefaultViewController;
 
 /**
  * This is the default implementation of the {@link IdentifiableViewController}
@@ -32,10 +35,10 @@ public class DefaultIdentifiableViewController extends DefaultViewController
 
 	@Override
 	public boolean containsIdentifiableView(String viewIdentifier) {
-		if (viewStack.isEmpty()) {
+		if (getViewStack().isEmpty()) {
 			return false;
 		}
-		for (ControllableView view : viewStack) {
+		for (ControllableView view : getViewStack()) {
 			if (((IdentifiableControllableView) view).getViewIdentifier()
 					.equals(viewIdentifier)) {
 				return true;
@@ -46,10 +49,10 @@ public class DefaultIdentifiableViewController extends DefaultViewController
 
 	@Override
 	public boolean goToIdentifiableView(String viewIdentifier) {
-		if (viewStack.isEmpty()) {
+		if (getViewStack().isEmpty()) {
 			return false;
 		}
-		for (ControllableView view : viewStack) {
+		for (ControllableView view : getViewStack()) {
 			if (((IdentifiableControllableView) view).getViewIdentifier()
 					.equals(viewIdentifier)) {
 				return goToView(view);

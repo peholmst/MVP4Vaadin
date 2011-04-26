@@ -15,8 +15,15 @@
  */
 package com.github.peholmst.mvp4vaadin.navigation;
 
-import static org.easymock.EasyMock.*;
-import static org.junit.Assert.*;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
 
@@ -33,18 +40,17 @@ import com.github.peholmst.mvp4vaadin.navigation.ControllableView.HideOperation;
  */
 public class DefaultViewControllerTest {
 
-	DefaultViewController<ControllableView> controller;
+	DefaultViewController controller;
 	ControllableView view;
 	ControllableView view2;
 	ControllableView view3;
 	ControllableView view4;
-	ViewProvider<ControllableView> viewProvider;
-	ViewControllerListener<ControllableView> controllerListener;
+	ViewProvider viewProvider;
+	ViewControllerListener controllerListener;
 
-	@SuppressWarnings("unchecked")
 	@Before
 	public void setUp() {
-		controller = new DefaultViewController<ControllableView>();
+		controller = new DefaultViewController();
 		view = createMock(ControllableView.class);
 		view2 = createMock(ControllableView.class);
 		view3 = createMock(ControllableView.class);
@@ -77,7 +83,7 @@ public class DefaultViewControllerTest {
 	@Test
 	public void testGoToViewSingleKeyValuePair() {
 		final boolean called[] = new boolean[1];
-		controller = new DefaultViewController<ControllableView>() {
+		controller = new DefaultViewController() {
 			/*
 			 * As the method under test should redirect to this method, we just override it
 			 * to make sure it receives the proper parameters.
@@ -99,7 +105,7 @@ public class DefaultViewControllerTest {
 	@Test
 	public void testGoToViewSingleKeyValuePair_NullKey() {
 		final boolean called[] = new boolean[1];
-		controller = new DefaultViewController<ControllableView>() {
+		controller = new DefaultViewController() {
 			/*
 			 * As the method under test should redirect to this method, we just override it
 			 * to make sure it receives the proper parameters.
@@ -121,7 +127,7 @@ public class DefaultViewControllerTest {
 	@Test
 	public void testGoToViewNoUserData() {
 		final boolean called[] = new boolean[1];
-		controller = new DefaultViewController<ControllableView>() {
+		controller = new DefaultViewController() {
 			/*
 			 * As the method under test should redirect to this method, we just override it
 			 * to make sure it receives the proper parameters.
@@ -143,7 +149,7 @@ public class DefaultViewControllerTest {
 	@Test
 	public void testGoToFirstView() {
 		final boolean called[] = new boolean[1];
-		controller = new DefaultViewController<ControllableView>() {
+		controller = new DefaultViewController() {
 			/*
 			 * As the method under test should redirect to this method, we just override it
 			 * to make sure it receives the proper parameters.
@@ -174,7 +180,7 @@ public class DefaultViewControllerTest {
 		replay(viewProvider);
 		
 		final boolean called[] = new boolean[1];
-		controller = new DefaultViewController<ControllableView>() {
+		controller = new DefaultViewController() {
 			/*
 			 * As the method under test should redirect to this method, we just override it
 			 * to make sure it receives the proper parameters.
@@ -202,7 +208,7 @@ public class DefaultViewControllerTest {
 		replay(viewProvider);
 
 		final boolean called[] = new boolean[1];
-		controller = new DefaultViewController<ControllableView>() {
+		controller = new DefaultViewController() {
 			/*
 			 * As the method under test should redirect to this method, we just override it
 			 * to make sure it receives the proper parameters.
@@ -233,7 +239,7 @@ public class DefaultViewControllerTest {
 		replay(viewProvider);
 		
 		final boolean called[] = new boolean[1];
-		controller = new DefaultViewController<ControllableView>() {
+		controller = new DefaultViewController() {
 			/*
 			 * As the method under test should redirect to this method, we just override it
 			 * to make sure it receives the proper parameters.

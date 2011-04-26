@@ -46,6 +46,10 @@ public class DefaultViewController implements ViewController {
 
 	Stack<ControllableView> viewStack = new Stack<ControllableView>();
 
+	protected Stack<ControllableView> getViewStack() {
+		return viewStack;
+	}
+	
 	@Override
 	public ControllableView getCurrentView() {
 		return currentView;

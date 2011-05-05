@@ -77,16 +77,20 @@ public abstract class AbstractView<V extends View, P extends Presenter<V>>
 			init();
 		}
 	}
-
+	
 	/**
 	 * This method will be called by the {@link #init()}-method to create the
-	 * presenter.
+	 * presenter. The default implementation will throw an {@link UnsupportedOperationException} exception,
+	 * subclasses should override unless the presenter is specified using {@link #setPresenter(Presenter)} prior
+	 * to initialization.
 	 * 
 	 * @see Presenter#Presenter(View)
 	 * 
 	 * @return a new presenter instance (never <code>null</code>).
 	 */
-	protected abstract P createPresenter();
+	protected P createPresenter() {
+		throw new UnsupportedOperationException("This method has not been implemented");
+	}
 
 	private boolean initialized = false;
 
@@ -101,8 +105,12 @@ public abstract class AbstractView<V extends View, P extends Presenter<V>>
 		if (initialized) {
 			throw new IllegalStateException("already initialized");
 		}
-		getLogger().log(Level.FINE, "Creating presenter");
-		presenter = createPresenter();
+		if (presenter == null) {
+			getLogger().log(Level.FINE, "Creating new presenter instance");
+			presenter = createPresenter();
+		} else {
+			getLogger().log(Level.FINE, "Found existing presenter instance");
+		}
 		getLogger().log(Level.FINE, "Initializing view {0}", this);
 		initView();
 		getLogger().log(Level.FINE, "Initializing presenter {0}", presenter);
@@ -147,6 +155,19 @@ public abstract class AbstractView<V extends View, P extends Presenter<V>>
 		return presenter;
 	}
 
+	/**
+	 * Sets the presenter for this view. This method is useful for dependency injection frameworks.
+	 * If the presenter has already been initialized, this method will throw an exception.
+	 * 
+	 * @param presenter the presenter instance to set.
+	 */
+	public void setPresenter(P presenter) {
+		if (isInitialized()) {
+			throw new IllegalStateException("already initialized");
+		}
+		this.presenter = presenter;
+	}
+	
 	@Override
 	public boolean isInitialized() {
 		return initialized;

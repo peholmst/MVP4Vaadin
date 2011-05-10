@@ -29,12 +29,12 @@ import org.junit.Test;
  */
 public class DefaultViewProviderTest {
 
-	DefaultViewProvider<ControllableView> viewProvider;
+	DefaultViewProvider viewProvider;
 	ControllableView view;
 
 	@Before
 	public void setUp() {
-		viewProvider = new DefaultViewProvider<ControllableView>();
+		viewProvider = new DefaultViewProvider();
 		view = createMock(ControllableView.class);
 	}
 

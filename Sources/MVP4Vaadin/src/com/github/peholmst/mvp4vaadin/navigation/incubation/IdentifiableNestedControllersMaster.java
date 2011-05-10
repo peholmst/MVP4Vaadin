@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.peholmst.mvp4vaadin.navigation;
+package com.github.peholmst.mvp4vaadin.navigation.incubation;
 
 import java.util.Stack;
+
+import com.github.peholmst.mvp4vaadin.navigation.ViewController;
 
 /**
  * TODO Document me!

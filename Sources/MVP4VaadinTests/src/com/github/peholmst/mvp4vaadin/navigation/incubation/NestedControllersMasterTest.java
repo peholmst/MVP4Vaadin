@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.peholmst.mvp4vaadin.navigation;
+package com.github.peholmst.mvp4vaadin.navigation.incubation;
 
 import static org.junit.Assert.*;
 
@@ -23,6 +23,13 @@ import org.easymock.Capture;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.github.peholmst.mvp4vaadin.navigation.ControllableView;
+import com.github.peholmst.mvp4vaadin.navigation.Direction;
+import com.github.peholmst.mvp4vaadin.navigation.ViewController;
+import com.github.peholmst.mvp4vaadin.navigation.ViewControllerListener;
+import com.github.peholmst.mvp4vaadin.navigation.incubation.ControllableViewWithEmbeddedController;
+import com.github.peholmst.mvp4vaadin.navigation.incubation.NestedControllersMaster;
+
 /**
  * Test case for {@link NestedControllersMaster}.
  * 
@@ -31,23 +38,22 @@ import org.junit.Test;
  */
 public class NestedControllersMasterTest {
 
-	NestedControllersMaster<ControllableView> master;
-	ViewController<ControllableView> controller;
-	ViewController<ControllableView> controller2;
-	ViewController<ControllableView> controller3;
-	Capture<ViewControllerListener<ControllableView>> listener;
+	NestedControllersMaster master;
+	ViewController controller;
+	ViewController controller2;
+	ViewController controller3;
+	Capture<ViewControllerListener> listener;
 	ControllableView view;
-	ControllableViewWithEmbeddedController<ControllableView> viewWithController;
-	ControllableViewWithEmbeddedController<ControllableView> viewWithController2;
+	ControllableViewWithEmbeddedController viewWithController;
+	ControllableViewWithEmbeddedController viewWithController2;
 	
-	@SuppressWarnings("unchecked")
 	@Before
 	public void setUp() {
-		master = new NestedControllersMaster<ControllableView>();
+		master = new NestedControllersMaster();
 		controller = createMock(ViewController.class);
 		controller2 = createMock(ViewController.class);
 		controller3 = createMock(ViewController.class);
-		listener = new Capture<ViewControllerListener<ControllableView>>();
+		listener = new Capture<ViewControllerListener>();
 		view = createMock(ControllableView.class);
 		viewWithController = createMock(ControllableViewWithEmbeddedController.class);
 		viewWithController2 = createMock(ControllableViewWithEmbeddedController.class);

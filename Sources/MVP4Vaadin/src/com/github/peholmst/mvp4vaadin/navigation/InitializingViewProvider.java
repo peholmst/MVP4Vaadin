@@ -18,7 +18,7 @@ package com.github.peholmst.mvp4vaadin.navigation;
 import java.util.Map;
 
 /**
- * The initializing view provider is intended to be implemented by view provider
+ * The initializing view provider is intended to be implemented by view providers
  * that actually work more like view factories in that they create new instances
  * of the views when they are requested.
  * 

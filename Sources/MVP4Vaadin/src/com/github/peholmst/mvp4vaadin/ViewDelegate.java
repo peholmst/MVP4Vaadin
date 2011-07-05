@@ -125,6 +125,13 @@ public class ViewDelegate<V extends View, P extends Presenter<V>> implements
 		this.presenter = presenter;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see ViewDelegateOwner#createPresenter()
+	 * @see ViewDelegateOwner#initView()
+	 * @see ViewDelegateOwner#finalizeInitialization()
+	 */
 	@Override
 	public void init() {
 		if (isInitialized()) {

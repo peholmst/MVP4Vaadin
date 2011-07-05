@@ -15,7 +15,6 @@
  */
 package com.github.peholmst.mvp4vaadin;
 
-
 /**
  * This interface represents a View in the Model-View-Presenter (MVP) pattern.
  * The view is responsible for displaying information to the user when requested
@@ -29,6 +28,7 @@ package com.github.peholmst.mvp4vaadin;
  * and initializing the presenter (see {@link #init()}).
  * 
  * @see AbstractView
+ * @see AbstractViewComponent
  * 
  * @author Petter Holmström
  * @since 1.0
@@ -55,6 +55,14 @@ public interface View extends java.io.Serializable {
 	 * 
 	 * @return the description (never <code>null</code> but may be empty).
 	 */
+	String getViewDescription();
+
+	/**
+	 * @deprecated This property collides with the <code>getDescription()</code>
+	 *             method of the Vaadin components and will be removed before
+	 *             the 1.0 release. Use {@link #getViewDescription()} instead.
+	 */
+	@Deprecated
 	String getDescription();
 
 	/**
@@ -65,7 +73,7 @@ public interface View extends java.io.Serializable {
 	 *             if the view has already been initialized when this method is
 	 *             called.
 	 */
-	void init() throws IllegalStateException;
+	void init();
 
 	/**
 	 * Checks if the view (and the presenter) has been initialized.

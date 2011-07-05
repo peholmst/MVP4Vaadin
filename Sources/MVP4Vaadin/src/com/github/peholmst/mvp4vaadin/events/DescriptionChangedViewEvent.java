@@ -21,7 +21,7 @@ import com.github.peholmst.mvp4vaadin.ViewEvent;
 /**
  * Event indicating that the description of a view has changed.
  * 
- * @see View#getDescription()
+ * @see View#getViewDescription()
  * 
  * @author Petter Holmström
  * @since 1.0

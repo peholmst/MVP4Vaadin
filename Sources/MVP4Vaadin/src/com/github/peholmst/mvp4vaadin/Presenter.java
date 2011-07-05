@@ -18,7 +18,7 @@ package com.github.peholmst.mvp4vaadin;
 /**
  * This is an abstract base class for Presenters in the Model-View-Presenter
  * (MVP) pattern. It has been designed to work together with views that extend
- * the {@link AbstractView} base class.
+ * the {@link AbstractView} or {@link AbstractViewComponent} base class.
  * <p>
  * The presenter contains the logic that controls the GUI. It reads information
  * from the Model and passes it to to the View for showing. It also receives
@@ -36,6 +36,7 @@ package com.github.peholmst.mvp4vaadin;
  * </ol>
  * 
  * @see AbstractView
+ * @see AbstractViewComponent
  * @author Petter Holmström
  * @since 1.0
  * @param <V>
@@ -70,7 +71,6 @@ public abstract class Presenter<V extends View> implements java.io.Serializable 
 	 * specified using the {@link #setView(View)} method.
 	 */
 	public Presenter() {
-
 	}
 
 	/**
@@ -108,9 +108,9 @@ public abstract class Presenter<V extends View> implements java.io.Serializable 
 	}
 
 	/**
-	 * This method is called by {@link AbstractView#init()} to initialize the
-	 * presenter. When this method is called, the view will already have been
-	 * initialized using {@link AbstractView#initView()}.
+	 * This method is called to initialize the presenter. When this happens, the
+	 * view will already be initialized, i.e. invoking any methods on the view
+	 * will not throw any exceptions.
 	 * <p>
 	 * This implementation does nothing, subclasses may override.
 	 */

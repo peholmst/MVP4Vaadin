@@ -15,105 +15,180 @@
  */
 package com.github.peholmst.mvp4vaadin;
 
+import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.github.peholmst.mvp4vaadin.events.DescriptionChangedViewEvent;
 import com.github.peholmst.mvp4vaadin.events.DisplayNameChangedViewEvent;
 
 /**
- * TODO Document and test me!
+ * This class is intended to be used as a delegate by {@link View}
+ * implementations. It includes a full implementation of the {@link View}
+ * interface. Usage of this class requires that the owning class implements the
+ * {@link ViewDelegateOwner} interface.
+ * <p>
+ * This class exists in order to make it possible to extend different base
+ * classes when implementing the {@link View} interface without having to
+ * implement all the basic View methods again and again and again.
+ * 
+ * @see AbstractView
+ * @see AbstractViewComponent
  * 
  * @author Petter Holmström
  * @since 1.0
  */
-public class ViewDelegate implements View {
+public class ViewDelegate<V extends View, P extends Presenter<V>> implements
+		View {
 
 	private static final long serialVersionUID = -8388839248083280057L;
-	
+
 	private String displayName;
-	
+
 	private String description;
 
-	private final View delegateOwner;
-	
+	private final LinkedList<ViewListener> listenerList = new LinkedList<ViewListener>();
+
+	private boolean initialized = false;
+
+	private transient Logger logger;
+
+	private final ViewDelegateOwner<V, P> delegateOwner;
+
+	private P presenter;
+
 	/**
-	 * 
+	 * Creates a new <code>ViewDelegate</code> of the specified delegate owner.
 	 */
-	public ViewDelegate(View delegateOwner) {
+	public ViewDelegate(ViewDelegateOwner<V, P> delegateOwner) {
 		this.delegateOwner = delegateOwner;
 	}
-	
+
+	private Logger getLogger() {
+		if (logger == null) {
+			logger = Logger.getLogger(delegateOwner.getClass().getName());
+		}
+		return logger;
+	}
+
 	@Override
 	public String getDisplayName() {
 		return displayName;
 	}
-	
+
 	/**
-	 * 
-	 * @param displayName
+	 * Sets the display name of the view and fires a
+	 * {@link DisplayNameChangedViewEvent}.
 	 */
 	public void setDisplayName(String displayName) {
 		final String old = this.displayName;
 		this.displayName = displayName;
-		fireViewEvent(new DisplayNameChangedViewEvent(delegateOwner, old, displayName));
+		fireViewEvent(new DisplayNameChangedViewEvent(delegateOwner, old,
+				displayName));
 	}
 
 	@Override
-	public String getDescription() {
+	public String getViewDescription() {
 		return description;
 	}
 
 	/**
-	 * 
-	 * @param description
+	 * Sets the description of the view and fires a
+	 * {@link DescriptionChangedViewEvent}.
 	 */
-	public void setDescription(String description) {
+	public void setViewDescription(String description) {
 		final String old = this.description;
 		this.description = description;
-		fireViewEvent(new DescriptionChangedViewEvent(delegateOwner, old, description));
-	}
-	
-	/* (non-Javadoc)
-	 * @see com.github.peholmst.mvp4vaadin.View#init()
-	 */
-	@Override
-	public void init() throws IllegalStateException {
-		// TODO Auto-generated method stub
-		
+		fireViewEvent(new DescriptionChangedViewEvent(delegateOwner, old,
+				description));
 	}
 
-	/* (non-Javadoc)
-	 * @see com.github.peholmst.mvp4vaadin.View#isInitialized()
+	/**
+	 * Gets the presenter of the view.
+	 * 
+	 * @return the presenter instance (never <code>null</code> once the view has
+	 *         been initialized).
 	 */
+	public P getPresenter() {
+		return presenter;
+	}
+
+	/**
+	 * Sets the presenter of the view. This method is useful for dependency
+	 * injection frameworks. If the view has already been initialized, this
+	 * method will throw an exception.
+	 */
+	public void setPresenter(P presenter) {
+		if (isInitialized()) {
+			throw new IllegalStateException("already initialized");
+		}
+		this.presenter = presenter;
+	}
+
+	@Override
+	public void init() {
+		if (isInitialized()) {
+			throw new IllegalStateException("already initialized");
+		}
+		if (presenter == null) {
+			getLogger().log(Level.FINE, "Creating new presenter instance");
+			presenter = delegateOwner.createPresenter();
+		}
+
+		getLogger().log(Level.FINE, "Initializing view {0}", this);
+		delegateOwner.initView();
+
+		getLogger().log(Level.FINE, "Initializing presenter {0}", presenter);
+		presenter.init();
+
+		getLogger().log(Level.FINE,
+				"View and presenter initialized, finalizing initialization");
+		delegateOwner.finalizeInitialization();
+		initialized = true;
+	}
+
 	@Override
 	public boolean isInitialized() {
-		// TODO Auto-generated method stub
-		return false;
+		return initialized;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.github.peholmst.mvp4vaadin.View#addListener(com.github.peholmst.mvp4vaadin.ViewListener)
-	 */
 	@Override
 	public void addListener(ViewListener listener) {
-		// TODO Auto-generated method stub
-		
+		if (listener != null) {
+			listenerList.add(listener);
+		}
 	}
 
-	/* (non-Javadoc)
-	 * @see com.github.peholmst.mvp4vaadin.View#removeListener(com.github.peholmst.mvp4vaadin.ViewListener)
-	 */
 	@Override
 	public void removeListener(ViewListener listener) {
-		// TODO Auto-generated method stub
-		
+		if (listener != null) {
+			listenerList.remove(listener);
+		}
 	}
 
-	/* (non-Javadoc)
-	 * @see com.github.peholmst.mvp4vaadin.View#fireViewEvent(com.github.peholmst.mvp4vaadin.ViewEvent)
-	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public void fireViewEvent(ViewEvent event) {
-		// TODO Auto-generated method stub
-		
+		if (event == null) {
+			return;
+		}
+		getLogger().log(Level.FINE, "Firing event {0}", event);
+		/*
+		 * Create a clone of the listener list. This way, we prevent weird
+		 * situations if any of the listeners register new listeners or remove
+		 * existing ones.
+		 */
+		LinkedList<ViewListener> clonedList = (LinkedList<ViewListener>) listenerList
+				.clone();
+		for (ViewListener listener : clonedList) {
+			listener.handleViewEvent(event);
+		}
+	}
+
+	@Override
+	@Deprecated
+	public String getDescription() {
+		return getViewDescription();
 	}
 
 }

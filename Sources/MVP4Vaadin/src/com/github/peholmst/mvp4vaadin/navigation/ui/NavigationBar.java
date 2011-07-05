@@ -166,7 +166,7 @@ public class NavigationBar extends CssLayout implements ViewControllerListener {
 		}
 
 		final Button btn = addViewButton(view.getDisplayName());
-		btn.setDescription(view.getDescription());
+		btn.setDescription(view.getViewDescription());
 		btn.addListener(new Button.ClickListener() {
 
 			private static final long serialVersionUID = -2163467482631873920L;

@@ -63,14 +63,9 @@
 			</manifest>
 			<fileset dir="${addon.build.dir}" includes="**"/>
 			<fileset dir="${addon.api.dir}" includes="**"/>
+			<fileset dir="${addon.src.dir}" includes="**"/>
 		</jar>
 		<copy file="${addon.jar}" tofile="${addon.jar.noversion}"/>
-	</target>
-	
-	<target name="build-addon-source-jar">
-		<jar basedir="${addon.src.dir}" compress="true" encoding="utf-8" destfile="${addon.src.jar}">
-		</jar>
-		<copy file="${addon.src.jar}" tofile="${addon.src.jar.noversion}"/>		
 	</target>
 	
 <!--	<target name="compile-demo" depends="build-addon-jar">
@@ -90,7 +85,7 @@
 		<war basedir="${demo.war.dir}" compress="true" encoding="utf-8" destfile="${demo.war}"/>
 	</target>-->
 	
-	<target name="all" depends="clean,build-addon-jar,build-addon-source-jar">
+	<target name="all" depends="clean,build-addon-jar">
 	</target>
 
 </project>

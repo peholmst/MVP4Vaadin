@@ -1,5 +1,5 @@
 package com.github.peholmst.mvp4vaadin;
 
-public class PresenterTest {
+public class AbstractViewComponentTest {
 	// TODO Write test
 }

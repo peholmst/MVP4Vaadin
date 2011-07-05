@@ -15,13 +15,12 @@
  */
 package com.github.peholmst.mvp4vaadin;
 
-import java.util.LinkedList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 
 /**
  * This is an abstract base class for {@link View} implementations. It has been
  * designed to be used together with concrete {@link Presenter} implementations.
+ * It delegates all {@link View}-methods to a {@link ViewDelegate}.
  * 
  * @author Petter Holmström
  * @since 1.0
@@ -32,22 +31,11 @@ import java.util.logging.Logger;
  *            the type of the Presenter.
  */
 public abstract class AbstractView<V extends View, P extends Presenter<V>>
-		implements View {
+		implements ViewDelegateOwner<V, P> {
 
 	private static final long serialVersionUID = 8812702399992511588L;
 
-	private transient Logger logger;
-
-	private P presenter;
-
-	private LinkedList<ViewListener> listenerList = new LinkedList<ViewListener>();
-
-	private Logger getLogger() {
-		if (logger == null) {
-			logger = Logger.getLogger(getClass().getName());
-		}
-		return logger;
-	}
+	private final ViewDelegate<V, P> viewDelegate;
 
 	/**
 	 * Creates a new <code>AbstractView</code>, but does NOT initialize it. It
@@ -56,7 +44,7 @@ public abstract class AbstractView<V extends View, P extends Presenter<V>>
 	 * initialized.
 	 */
 	public AbstractView() {
-
+		viewDelegate = new ViewDelegate<V, P>(this);
 	}
 
 	/**
@@ -68,76 +56,90 @@ public abstract class AbstractView<V extends View, P extends Presenter<V>>
 	 *            initialize it later.
 	 */
 	public AbstractView(boolean initialize) {
+		viewDelegate = new ViewDelegate<V, P>(this);
 		if (initialize) {
 			init();
 		}
 	}
-	
-	/**
-	 * This method will be called by the {@link #init()}-method to create the
-	 * presenter. The default implementation will throw an {@link UnsupportedOperationException} exception,
-	 * subclasses should override unless the presenter is specified using {@link #setPresenter(Presenter)} prior
-	 * to initialization.
-	 * 
-	 * @see Presenter#Presenter(View)
-	 * 
-	 * @return a new presenter instance (never <code>null</code>).
-	 */
-	protected P createPresenter() {
-		throw new UnsupportedOperationException("This method has not been implemented");
+
+	@Override
+	@Deprecated
+	public String getDescription() {
+		return viewDelegate.getDescription();
 	}
 
-	private boolean initialized = false;
+	@Override
+	public String getViewDescription() {
+		return viewDelegate.getViewDescription();
+	}
+
+	/**
+	 * @see ViewDelegate#setViewDescription(String)
+	 */
+	protected void setViewDescription(String description) {
+		viewDelegate.setViewDescription(description);
+	}
+
+	@Override
+	public String getDisplayName() {
+		return viewDelegate.getDisplayName();
+	}
+
+	/**
+	 * @see ViewDelegate#setDisplayName(String)
+	 */
+	protected void setDisplayName(String displayName) {
+		viewDelegate.setDisplayName(displayName);
+	}
 
 	/**
 	 * {@inheritDoc}
+	 * <p>
+	 * The default implementation will throw an
+	 * {@link UnsupportedOperationException} exception, subclasses should
+	 * override unless the presenter is specified using
+	 * {@link #setPresenter(Presenter)} prior to initialization.
+	 */
+	@Override
+	public P createPresenter() {
+		throw new UnsupportedOperationException(
+				"This method has not been implemented");
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * <p>
+	 * Please note that this method has been annotated with the
+	 * {@link PostConstruct @PostConstruct} annotation. If the view is created
+	 * using a container such as Spring or CDI, this method will be
+	 * automatically invoked after the view has been created and all the
+	 * dependencies have been injected.
 	 * 
 	 * @see #initView()
 	 * @see #finalizeInitialization()
 	 */
 	@Override
-	public void init() throws IllegalStateException {
-		if (initialized) {
-			throw new IllegalStateException("already initialized");
-		}
-		if (presenter == null) {
-			getLogger().log(Level.FINE, "Creating new presenter instance");
-			presenter = createPresenter();
-		} else {
-			getLogger().log(Level.FINE, "Found existing presenter instance");
-		}
-		getLogger().log(Level.FINE, "Initializing view {0}", this);
-		initView();
-		getLogger().log(Level.FINE, "Initializing presenter {0}", presenter);
-		presenter.init();
-		getLogger().log(Level.FINE,
-				"View and presenter initialized, finalizing initialization");
-		finalizeInitialization();
-		initialized = true;
+	@PostConstruct
+	public void init() {
+		viewDelegate.init();
 	}
 
 	/**
-	 * Initializes the view, e.g. creates and configures visual components,
-	 * event listeners, etc. When this method is called, {@link #getPresenter()}
-	 * will return a presenter instance, but it will not have been initialized
-	 * yet. In other words, if the presenter requires initialization (not all
-	 * presenters do), it must not be invoked by this method.
+	 * {@inheritDoc}
 	 * <p>
 	 * The default implementation does nothing, subclasses may override.
-	 * 
-	 * @see #finalizeInitialization()
 	 */
-	protected void initView() {
+	@Override
+	public void initView() {
 	}
 
 	/**
-	 * This method is called by the {@link #init()}-method after both the view
-	 * and the presenter have been initialized.
+	 * {@inheritDoc}
 	 * <p>
 	 * This implementation is empty, subclasses may override.
 	 */
-	protected void finalizeInitialization() {
-
+	@Override
+	public void finalizeInitialization() {
 	}
 
 	/**
@@ -147,58 +149,39 @@ public abstract class AbstractView<V extends View, P extends Presenter<V>>
 	 *         been initialized).
 	 */
 	public P getPresenter() {
-		return presenter;
+		return viewDelegate.getPresenter();
 	}
 
 	/**
-	 * Sets the presenter for this view. This method is useful for dependency injection frameworks.
-	 * If the presenter has already been initialized, this method will throw an exception.
+	 * Sets the presenter for this view. This method is useful for dependency
+	 * injection frameworks. If the presenter has already been initialized, this
+	 * method will throw an exception.
 	 * 
-	 * @param presenter the presenter instance to set.
+	 * @param presenter
+	 *            the presenter instance to set.
 	 */
 	public void setPresenter(P presenter) {
-		if (isInitialized()) {
-			throw new IllegalStateException("already initialized");
-		}
-		this.presenter = presenter;
+		viewDelegate.setPresenter(presenter);
 	}
-	
+
 	@Override
 	public boolean isInitialized() {
-		return initialized;
+		return viewDelegate.isInitialized();
 	}
 
 	@Override
 	public void addListener(ViewListener listener) {
-		if (listener != null) {
-			listenerList.add(listener);
-		}
+		viewDelegate.addListener(listener);
 	}
 
 	@Override
 	public void removeListener(ViewListener listener) {
-		if (listener != null) {
-			listenerList.remove(listener);
-		}
+		viewDelegate.removeListener(listener);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void fireViewEvent(ViewEvent event) {
-		if (event == null) {
-			return;
-		}
-		getLogger().log(Level.FINE, "Firing event {0}", event);
-		/*
-		 * Create a clone of the listener list. This way, we prevent weird
-		 * situations if any of the listeners register new listeners or remove
-		 * existing ones.
-		 */
-		LinkedList<ViewListener> clonedList = (LinkedList<ViewListener>) listenerList
-				.clone();
-		for (ViewListener listener : clonedList) {
-			listener.handleViewEvent(event);
-		}
+		viewDelegate.fireViewEvent(event);
 	}
 
 }

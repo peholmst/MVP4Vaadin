@@ -163,6 +163,13 @@ public class ViewDelegate<V extends View, P extends Presenter<V>> implements
 		return initialized;
 	}
 
+	/**
+	 * This method is intended to be used by unit tests only.
+	 */
+	void setInitialized(boolean initialized) {
+		this.initialized = initialized;
+	}
+	
 	@Override
 	public void addListener(ViewListener listener) {
 		if (listener != null) {

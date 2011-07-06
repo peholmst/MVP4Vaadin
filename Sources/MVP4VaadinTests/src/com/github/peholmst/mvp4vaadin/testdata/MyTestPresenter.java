@@ -38,6 +38,7 @@ public class MyTestPresenter extends Presenter<MyTestView> {
 	
 	@Override
 	public void init() {
+		super.init(); // Call to super() to get better test coverage even though the method is empty.
 		initialized = true;
 	}
 	

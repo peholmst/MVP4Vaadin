@@ -1,11 +1,15 @@
 ﻿MVP4Vaadin README
 =================
 
-MVP4Vaadin is a small Model-View-Presenter addon for Vaadin applications. It is licensed under Apache 2.0.
+MVP4Vaadin is a small Model-View-Presenter addon for Vaadin applications. 
+It is licensed under Apache 2.0.
 
 Developers:
 
-	Petter Holmström
-	Marcus Hellberg
+	Petter Holmström (core addon)
+	Marcus Hellberg (demo application)
 
-More information will be added soon.
+Please see the project wiki (https://github.com/peholmst/MVP4Vaadin/wiki) for information about
+what MVP4Vaadin is and how it is used in applications.
+
+Official releases are published in the Vaadin Directory (http://vaadin.com/addon/mvp4vaadin)

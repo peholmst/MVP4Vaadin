@@ -21,6 +21,7 @@ import java.util.logging.Logger;
 
 import com.github.peholmst.mvp4vaadin.events.DescriptionChangedViewEvent;
 import com.github.peholmst.mvp4vaadin.events.DisplayNameChangedViewEvent;
+import com.github.peholmst.mvp4vaadin.events.InitializedViewEvent;
 
 /**
  * This class is intended to be used as a delegate by {@link View}
@@ -131,6 +132,7 @@ public class ViewDelegate<V extends View, P extends Presenter<V>> implements
 	 * @see ViewDelegateOwner#createPresenter()
 	 * @see ViewDelegateOwner#initView()
 	 * @see ViewDelegateOwner#finalizeInitialization()
+	 * @see InitializedViewEvent
 	 */
 	@Override
 	public void init() {
@@ -152,6 +154,8 @@ public class ViewDelegate<V extends View, P extends Presenter<V>> implements
 				"View and presenter initialized, finalizing initialization");
 		delegateOwner.finalizeInitialization();
 		initialized = true;
+		
+		fireViewEvent(new InitializedViewEvent(delegateOwner));
 	}
 
 	@Override

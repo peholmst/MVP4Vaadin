@@ -51,12 +51,12 @@ public class DefaultViewControllerTest {
 	@Before
 	public void setUp() {
 		controller = new DefaultViewController();
-		view = createMock(ControllableView.class);
-		view2 = createMock(ControllableView.class);
-		view3 = createMock(ControllableView.class);
-		view4 = createMock(ControllableView.class);
-		viewProvider = createMock(ViewProvider.class);
-		controllerListener = createMock(ViewControllerListener.class);
+		view = createMock("view", ControllableView.class);
+		view2 = createMock("view2", ControllableView.class);
+		view3 = createMock("view3", ControllableView.class);
+		view4 = createMock("view4", ControllableView.class);
+		viewProvider = createMock("viewProvider", ViewProvider.class);
+		controllerListener = createMock("controllerListener", ViewControllerListener.class);
 	}
 	
 	@Test
@@ -320,6 +320,7 @@ public class DefaultViewControllerTest {
 
 		// Instruct mocks
 		view.showView(controller, userData, null, Direction.FORWARD);
+		expect(view.hideView(controller, view2, Direction.FORWARD)).andReturn(HideOperation.ALLOW);
 		replay(view);
 		view2.showView(controller, userData, view, Direction.FORWARD);
 		replay(view2);
@@ -712,8 +713,13 @@ public class DefaultViewControllerTest {
 		// This test was written to detect a bug that Marcus found.
 		
 		// Instruct mocks
+		expect(view.hideView(controller, view2, Direction.FORWARD)).andReturn(HideOperation.ALLOW_WITHOUT_FORWARD_NAVIGATION);
 		view.showView(controller, null, view2, Direction.BACKWARD);
+		
+		expect(view.hideView(controller, view3, Direction.FORWARD)).andReturn(HideOperation.ALLOW_WITHOUT_FORWARD_NAVIGATION);
 		view.showView(controller, null, view3, Direction.BACKWARD);
+
+		expect(view.hideView(controller, view4, Direction.FORWARD)).andReturn(HideOperation.ALLOW_WITHOUT_FORWARD_NAVIGATION);
 		view.showView(controller, null, view4, Direction.BACKWARD);
 		replay(view);
 		

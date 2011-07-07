@@ -49,7 +49,7 @@ public class DefaultViewController implements ViewController {
 	protected Stack<ControllableView> getViewStack() {
 		return viewStack;
 	}
-	
+
 	@Override
 	public ControllableView getCurrentView() {
 		return currentView;
@@ -250,8 +250,18 @@ public class DefaultViewController implements ViewController {
 			// stack.
 			if (!viewStack.isEmpty() && currentView != viewStack.peek()) {
 				do {
+					/*
+					 * No hideView() is called here as the views are already hidden and
+					 * are in front of the current view, i.e. they have already allowed
+					 * the current view to become visible. 
+					 */
 					viewStack.pop();
 				} while (currentView != viewStack.peek());
+			}
+			if (currentView != null
+					&& currentView.hideView(this, view, Direction.FORWARD)
+							.equals(HideOperation.PREVENT)) {
+				return false;
 			}
 			viewStack.push(view);
 			setCurrentView(view, viewStack.size() - 1, userData,

@@ -48,6 +48,14 @@ public abstract class AbstractI18NViewComponent<V extends View, P extends Presen
 
 	private final I18NComponentSupport i18nSupport = new I18NComponentSupport(
 			this);
+	
+	public AbstractI18NViewComponent() {
+		super();
+	}
+
+	public AbstractI18NViewComponent(Class<P> presenterClass, Class<V> viewClass) {
+		super(presenterClass, viewClass);
+	}
 
 	@Override
 	public void setI18N(I18N i18n) {

@@ -30,76 +30,95 @@ import com.github.peholmst.mvp4vaadin.View;
 public interface ControllableView extends View {
 
 	/**
-	 * Gets the view controller that controls this view. Please note, that a
-	 * view can only be controlled by one controller at a time.
+	 * Returns the view controller to which the view is attached, or
+	 * <code>null</code> if there is none. Please note, that a view can only be
+	 * controlled by one controller at a time.
 	 * 
-	 * @return the view controller, or <code>null</code> if the view is not
-	 *         currently controlled.
+	 * @see #attachedToController(ViewController)
+	 * @see #detachedFromController(ViewController)
 	 */
 	ViewController getViewController();
 
 	/**
-	 * This method is called by the view controller when the view is shown.
+	 * Returns whether the view is the current view of its controller. If the
+	 * view is not attached to a controller, this method always returns false.
+	 */
+	boolean isCurrentViewOfViewController();
+
+	/**
+	 * This method is called when the view is attached to the specified view
+	 * controller (i.e. added to the stack).
+	 */
+	void attachedToController(ViewController controller);
+
+	/**
+	 * This method is called when the view is detached from the specified view
+	 * controller (i.e. removed from the stack).
+	 */
+	void detachedFromController(ViewController controller);
+
+	/**
+	 * This method is called when the controller has navigated to the view from
+	 * a view lower down in the stack (or when the stack is empty). When this
+	 * method is called, the view is the current view of the controller.
 	 * 
-	 * @param viewController
-	 *            the view controller (must not be <code>null</code>).
 	 * @param userData
 	 *            a map of user-definable parameters (may be <code>null</code>).
-	 * @param oldView
-	 *            the view that was previously visible (may be <code>null</code>
-	 *            if this view is the first view to be shown).
-	 * @param direction
-	 *            the direction of the navigation inside the stack (must not be
-	 *            <code>null</code>).
+	 * @param fromView
+	 *            the view from which the controller navigated to this view (may
+	 *            be <code>null</code> if this view is the first view to be
+	 *            shown).
 	 */
-	void showView(ViewController viewController, Map<String, Object> userData,
-			ControllableView oldView, Direction direction);
+	void navigatedUpToView(Map<String, Object> userData,
+			ControllableView fromView);
 
 	/**
-	 * Enumeration that defines different hide operations for a view. Please see
-	 * {@link ControllableView#hideView(ViewController, ControllableView, Direction)}
-	 * for more information about what the different alternatives mean.
+	 * This method is called when the controller has navigated to the view from
+	 * a view higher up in the stack. When this method is called, the view is
+	 * the current view of the controller.
 	 * 
-	 * @author Petter Holmström
-	 * @since 1.0
+	 * @param fromView
+	 *            the view from which the controller navigated to this view
+	 *            (never <code>null</code>).
 	 */
-	enum HideOperation {
-		PREVENT, ALLOW, ALLOW_WITHOUT_FORWARD_NAVIGATION
-	}
+	void navigatedDownToView(ControllableView fromView);
 
 	/**
-	 * This method is called by the view controller before the view is hidden
-	 * and another one is shown. The view can control the operation by returning
-	 * a {@link HideOperation} constant:
-	 * <ul>
-	 * <li>{@link HideOperation#PREVENT PREVENT}: aborts the operation; the view
-	 * remains visible.</li>
-	 * <li>{@link HideOperation#ALLOW ALLOW}: allows the operation; the view is
-	 * hidden but remains in the controller stack.</li>
-	 * <li>{@link HideOperation#ALLOW_WITHOUT_FORWARD_NAVIGATION
-	 * ALLOW_WITHOUT_FORWARD_NAVIGATION}: allows the operation; the view is
-	 * hidden. If <code>direction</code> is {@link Direction#FORWARD FORWARD},
-	 * the view remains in the stack. If <code>direction</code> is
-	 * {@link Direction#BACKWARD BACKWARD}, the view and all the views on top of
-	 * it will be removed from the stack.</li>
-	 * </ul>
+	 * This method is called when the controller has navigated away from the
+	 * view. When this method is called, <code>toView</code> is the current view
+	 * of the controller.
+	 * 
+	 * @param toView
+	 *            the view to which the controller navigated from this view
+	 *            (never <code>null</code>).
+	 */
+	void navigatedAwayFromView(ControllableView toView);
+
+	/**
+	 * Returns whether the view allows the controller to navigate to another
+	 * view higher up in the stack. The view need not be the current view when
+	 * this method is called.
+	 */
+	boolean mayNavigateUp();
+
+	/**
+	 * Returns whether the view allows the controller to navigate to another
+	 * view lower down in the stack. The view need not be the current view when
+	 * this method is called.
+	 */
+	boolean mayNavigateDown();
+
+	/**
+	 * Returns whether the view can remain in the stack after the controller has
+	 * navigated to a view lower down in the stack.
 	 * <p>
-	 * Please note, that when the controller is jumping past several views (as
-	 * opposed to just moving one view forward or backward), this method will be
-	 * called on all the views that are jumped even though none of them are
-	 * actually visible to the user.
-	 * 
-	 * @param viewController
-	 *            the view controller (must not be <code>null</code>).
-	 * @param newView
-	 *            the view that will be shown in place of this view (must not be
-	 *            <code>null</code>).
-	 * @param direction
-	 *            the direction of the navigation inside the stack (must not be
-	 *            <code>null</code>).
-	 * @return the hide operation to use (never <code>null</code>).
+	 * If this method returns true, the view may choose when to detach the view
+	 * and can also navigate up to the view if necessary (e.g. if the user
+	 * interface has a "Forward" button as in a web browser).
+	 * <p>
+	 * If this method returns false, the view and and any views on top of it in
+	 * the stack will be detached as soon as the controller has navigated past
+	 * it.
 	 */
-	HideOperation hideView(ViewController viewController,
-			ControllableView newView, Direction direction);
-
+	boolean canRemainInStackAfterDownNavigation();
 }

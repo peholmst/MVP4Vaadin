@@ -53,6 +53,7 @@ public class ViewContainerComponent extends VerticalLayout implements
 			this.viewController.removeListener(this);
 		}
 		this.viewController = viewController;
+		setCurrentViewComponent();
 		if (this.viewController != null) {
 			this.viewController.addListener(this);
 		}
@@ -84,19 +85,20 @@ public class ViewContainerComponent extends VerticalLayout implements
 			ControllableView oldView, ControllableView newView,
 			Direction direction, boolean newViewIsTopMost) {
 		if (source == this.viewController) {
-			if (newView instanceof VaadinView) {
-				ComponentContainer newViewComponent = ((VaadinView) newView)
-						.getViewComponent();
-				if (currentViewComponent != newViewComponent) {
-					if (currentViewComponent == null) {
-						addComponent(newViewComponent);
-					} else {
-						replaceComponent(currentViewComponent, newViewComponent);
-					}
-					currentViewComponent = newViewComponent;
-				}
-			}
+			setCurrentViewComponent();
 		}
+	}
+	
+	private void setCurrentViewComponent() {
+		if (currentViewComponent != null) {
+			removeComponent(currentViewComponent);
+			currentViewComponent = null;
+		}
+		
+		if (viewController != null && viewController.getCurrentView() instanceof VaadinView) {
+			currentViewComponent = ((VaadinView) viewController.getCurrentView()).getViewComponent();
+			addComponent(currentViewComponent);
+		}		
 	}
 
 }

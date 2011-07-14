@@ -22,6 +22,9 @@ import java.util.logging.Logger;
 import com.github.peholmst.mvp4vaadin.events.DescriptionChangedViewEvent;
 import com.github.peholmst.mvp4vaadin.events.DisplayNameChangedViewEvent;
 import com.github.peholmst.mvp4vaadin.events.InitializedViewEvent;
+import com.github.peholmst.mvp4vaadin.util.Adaptable;
+import com.github.peholmst.mvp4vaadin.util.AdaptableSupport;
+import com.github.peholmst.mvp4vaadin.util.UnsupportedAdapterException;
 
 /**
  * This class is intended to be used as a delegate by {@link View}
@@ -55,6 +58,8 @@ public class ViewDelegate<V extends View, P extends Presenter<V>> implements
 	private transient Logger logger;
 
 	private final ViewDelegateOwner<V, P> delegateOwner;
+
+	private final AdaptableSupport adaptableSupport = new AdaptableSupport();
 
 	private P presenter;
 
@@ -154,7 +159,7 @@ public class ViewDelegate<V extends View, P extends Presenter<V>> implements
 				"View and presenter initialized, finalizing initialization");
 		delegateOwner.finalizeInitialization();
 		initialized = true;
-		
+
 		fireViewEvent(new InitializedViewEvent(delegateOwner));
 	}
 
@@ -169,7 +174,7 @@ public class ViewDelegate<V extends View, P extends Presenter<V>> implements
 	void setInitialized(boolean initialized) {
 		this.initialized = initialized;
 	}
-	
+
 	@Override
 	public void addListener(ViewListener listener) {
 		if (listener != null) {
@@ -207,6 +212,25 @@ public class ViewDelegate<V extends View, P extends Presenter<V>> implements
 	@Deprecated
 	public String getDescription() {
 		return getViewDescription();
+	}
+
+	@Override
+	public boolean supportsAdapter(Class<?> adapterClass) {
+		return adaptableSupport.supportsAdapter(adapterClass);
+	}
+
+	@Override
+	public <T> T adapt(Class<T> adapterClass)
+			throws UnsupportedAdapterException {
+		return adaptableSupport.adapt(adapterClass);
+	}
+
+	/**
+	 * Returns the <code>AdaptableSupport</code> instance used by the view
+	 * delegate to implement the {@link Adaptable} interface.
+	 */
+	public AdaptableSupport getAdaptableSupport() {
+		return adaptableSupport;
 	}
 
 }

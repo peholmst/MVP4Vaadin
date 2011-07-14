@@ -22,6 +22,8 @@ import javax.annotation.PostConstruct;
 import com.github.peholmst.mvp4vaadin.events.DescriptionChangedViewEvent;
 import com.github.peholmst.mvp4vaadin.events.DisplayNameChangedViewEvent;
 import com.github.peholmst.mvp4vaadin.i18n.AbstractI18NViewComponent;
+import com.github.peholmst.mvp4vaadin.util.AdaptableSupport;
+import com.github.peholmst.mvp4vaadin.util.UnsupportedAdapterException;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.CustomComponent;
@@ -216,4 +218,23 @@ public abstract class AbstractViewComponent<V extends View, P extends Presenter<
 	public void setPresenter(P presenter) {
 		viewDelegate.setPresenter(presenter);
 	}
+
+	@Override
+	public boolean supportsAdapter(Class<?> adapterClass) {
+		return viewDelegate.supportsAdapter(adapterClass);
+	}
+
+	@Override
+	public <T> T adapt(Class<T> adapterClass)
+			throws UnsupportedAdapterException {
+		return viewDelegate.adapt(adapterClass);
+	}
+		
+	/**
+	 * Returns the <code>AdaptableSupport</code> instance used by the view.
+	 */
+	protected AdaptableSupport getAdaptableSupport() {
+		return viewDelegate.getAdaptableSupport();
+	}	
+	
 }

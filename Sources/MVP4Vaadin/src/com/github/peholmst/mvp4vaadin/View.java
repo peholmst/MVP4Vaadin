@@ -15,6 +15,8 @@
  */
 package com.github.peholmst.mvp4vaadin;
 
+import com.github.peholmst.mvp4vaadin.util.Adaptable;
+
 /**
  * This interface represents a View in the Model-View-Presenter (MVP) pattern.
  * The view is responsible for displaying information to the user when requested
@@ -33,7 +35,7 @@ package com.github.peholmst.mvp4vaadin;
  * @author Petter Holmström
  * @since 1.0
  */
-public interface View extends java.io.Serializable {
+public interface View extends Adaptable {
 
 	/**
 	 * Gets the display name of the view. This name will be shown to the user in

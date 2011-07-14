@@ -15,6 +15,10 @@
  */
 package com.github.peholmst.mvp4vaadin;
 
+import com.github.peholmst.mvp4vaadin.util.Adaptable;
+import com.github.peholmst.mvp4vaadin.util.AdaptableSupport;
+import com.github.peholmst.mvp4vaadin.util.UnsupportedAdapterException;
+
 /**
  * This is an abstract base class for Presenters in the Model-View-Presenter
  * (MVP) pattern. It has been designed to work together with views that extend
@@ -42,11 +46,13 @@ package com.github.peholmst.mvp4vaadin;
  * @param <V>
  *            the type of the View that uses the Presenter.
  */
-public abstract class Presenter<V extends View> implements java.io.Serializable {
+public abstract class Presenter<V extends View> implements Adaptable {
 
 	private static final long serialVersionUID = -7842839205919502161L;
 
 	private V view;
+
+	private final AdaptableSupport adaptableSupport = new AdaptableSupport();
 
 	/**
 	 * Creates a new <code>Presenter</code> for the specified view. Any
@@ -116,5 +122,23 @@ public abstract class Presenter<V extends View> implements java.io.Serializable 
 	 */
 	public void init() {
 		// NOP
+	}
+
+	@Override
+	public boolean supportsAdapter(Class<?> adapterClass) {
+		return adaptableSupport.supportsAdapter(adapterClass);
+	}
+
+	@Override
+	public <T> T adapt(Class<T> adapterClass)
+			throws UnsupportedAdapterException {
+		return adaptableSupport.adapt(adapterClass);
+	}
+
+	/**
+	 * Returns the <code>AdaptableSupport</code> instance used by the presenter.
+	 */
+	protected AdaptableSupport getAdaptableSupport() {
+		return adaptableSupport;
 	}
 }

@@ -17,6 +17,9 @@ package com.github.peholmst.mvp4vaadin;
 
 import javax.annotation.PostConstruct;
 
+import com.github.peholmst.mvp4vaadin.util.AdaptableSupport;
+import com.github.peholmst.mvp4vaadin.util.UnsupportedAdapterException;
+
 /**
  * This is an abstract base class for {@link View} implementations. It has been
  * designed to be used together with concrete {@link Presenter} implementations.
@@ -182,6 +185,24 @@ public abstract class AbstractView<V extends View, P extends Presenter<V>>
 	@Override
 	public void fireViewEvent(ViewEvent event) {
 		viewDelegate.fireViewEvent(event);
+	}
+
+	@Override
+	public boolean supportsAdapter(Class<?> adapterClass) {
+		return viewDelegate.supportsAdapter(adapterClass);
+	}
+
+	@Override
+	public <T> T adapt(Class<T> adapterClass)
+			throws UnsupportedAdapterException {
+		return viewDelegate.adapt(adapterClass);
+	}
+
+	/**
+	 * Returns the <code>AdaptableSupport</code> instance used by the view.
+	 */
+	protected AdaptableSupport getAdaptableSupport() {
+		return viewDelegate.getAdaptableSupport();
 	}
 
 }

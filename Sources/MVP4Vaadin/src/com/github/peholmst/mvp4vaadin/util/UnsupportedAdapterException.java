@@ -39,7 +39,7 @@ public class UnsupportedAdapterException extends IllegalArgumentException {
 	 * Constructs a new <code>UnsupportedAdapterException</code>.
 	 * 
 	 * @param adapterClass
-	 *            the unsupported adapter class (must not be null).
+	 *            the unsupported adapter class (must not be <code>null</code>).
 	 */
 	public UnsupportedAdapterException(Class<?> adapterClass) {
 		super("The adapter class " + adapterClass.getName()
@@ -48,7 +48,7 @@ public class UnsupportedAdapterException extends IllegalArgumentException {
 	}
 
 	/**
-	 * Returns the unsupported adapter class, or null if no class was provided.
+	 * Returns the unsupported adapter class, or <code>null</code> if no class was provided.
 	 */
 	public Class<?> getAdapterClass() {
 		return adapterClass;

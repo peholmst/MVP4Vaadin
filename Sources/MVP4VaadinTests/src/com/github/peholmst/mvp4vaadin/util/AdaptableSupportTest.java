@@ -43,7 +43,7 @@ public class AdaptableSupportTest {
 	public static class SerializableAdapter implements java.io.Serializable {
 
 	}
-
+	
 	@Test
 	public void registerAdapter() {
 		final AdaptableSupport support = new AdaptableSupport();
@@ -104,5 +104,17 @@ public class AdaptableSupportTest {
 				bos.toByteArray());
 		final ObjectInputStream ois = new ObjectInputStream(bis);
 		return (T) ois.readObject();
+	}
+	
+	@Test
+	public void chainAdapter() {
+		final AdaptableSupport support = new AdaptableSupport();
+		final AdaptableSupport chainedSupport = new AdaptableSupport();
+		final SerializableAdapter adapter = new SerializableAdapter();
+		support.chainAdapter(SerializableAdapter.class, chainedSupport);
+		chainedSupport.registerAdapter(SerializableAdapter.class, adapter);
+		
+		assertTrue(support.supportsAdapter(SerializableAdapter.class));
+		assertSame(adapter, support.adapt(SerializableAdapter.class));
 	}
 }

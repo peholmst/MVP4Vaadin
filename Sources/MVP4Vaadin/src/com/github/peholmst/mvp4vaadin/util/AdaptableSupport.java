@@ -63,6 +63,7 @@ public class AdaptableSupport implements Adaptable {
 	}
 
 	private Map<String, AdapterEntry> adapterMap = new HashMap<String, AdapterEntry>();
+	private Map<String, Adaptable> chainedAdapterMap = new HashMap<String, Adaptable>();
 
 	/**
 	 * Registers the specified adapter of the specified adapter class. If an
@@ -70,18 +71,45 @@ public class AdaptableSupport implements Adaptable {
 	 * replaced.
 	 * 
 	 * @param adapterClass
-	 *            the adapter class (must not be null).
+	 *            the adapter class (must not be <code>null</code>).
 	 * @param adapter
-	 *            the adapter (must not be null).
+	 *            the adapter (must not be <code>null</code>).
 	 */
 	public <T> void registerAdapter(Class<T> adapterClass, T adapter) {
 		if (adapterClass == null) {
-			throw new IllegalArgumentException("adapterClass must not be null");
+			throw new IllegalArgumentException(
+					"adapterClass must not be null");
 		}
 		if (adapter == null) {
-			throw new IllegalArgumentException("adapter must not be null");
+			throw new IllegalArgumentException(
+					"adapter must not be null");
 		}
 		adapterMap.put(adapterClass.getName(), new AdapterEntry(adapter));
+	}
+
+	/**
+	 * Chains the specified {@link Adaptable} to the specified adapter class. If
+	 * no adapter have been registered for the same adapter class using
+	 * {@link #registerAdapter(Class, Object)}, any calls to
+	 * {@link #supportsAdapter(Class)} and {@link #adapt(Class)} will be sent to
+	 * the chained <code>adaptable</code> instead.
+	 * 
+	 * 
+	 * @param adapterClass
+	 *            the adapter class (must not be <code>null</code>).
+	 * @param adaptable
+	 *            the adaptable class to chain (must not be <code>null</code>).
+	 */
+	public void chainAdapter(Class<?> adapterClass, Adaptable adaptable) {
+		if (adapterClass == null) {
+			throw new IllegalArgumentException(
+					"adapterClass must not be null");
+		}
+		if (adaptable == null) {
+			throw new IllegalArgumentException(
+					"adaptable must not be null");
+		}
+		chainedAdapterMap.put(adapterClass.getName(), adaptable);
 	}
 
 	/**
@@ -89,29 +117,67 @@ public class AdaptableSupport implements Adaptable {
 	 * registered, nothing happens.
 	 * 
 	 * @param adapterClass
-	 *            the adapter class (must not be null).
+	 *            the adapter class (must not be <code>null</code>).
 	 */
 	public void unregisterAdapter(Class<?> adapterClass) {
 		if (adapterClass == null) {
-			throw new IllegalArgumentException("adapterClass must not be null");
+			throw new IllegalArgumentException(
+					"adapterClass must not be null");
 		}
 		adapterMap.remove(adapterClass.getName());
-
 	}
 
+	/**
+	 * Unregisters the chained {@link Adaptable} from the specified adapter
+	 * class. If no such adapter has been chained, nothing happens.
+	 * 
+	 * @param adapterClass
+	 *            the adapter class (must not be <code>null</code>).
+	 */
+	public void unchainAdapter(Class<?> adapterClass) {
+		if (adapterClass == null) {
+			throw new IllegalArgumentException(
+					"adapterClass must not be null");
+		}
+		chainedAdapterMap.remove(adapterClass.getName());
+	}
+
+	// TODO Refactor the supportsAdapter and adapt methods
+	
 	public boolean supportsAdapter(Class<?> adapterClass) {
-		return adapterMap.keySet().contains(adapterClass.getName());
+		if (adapterClass == null) {
+			throw new IllegalArgumentException(
+					"adapterClass must not be null");
+		}
+		final String adapterClassName = adapterClass.getName();
+		if (adapterMap.keySet().contains(adapterClassName)) {
+			return true;
+		} else {
+			final Adaptable chainedAdaptable = chainedAdapterMap.get(adapterClassName);
+			if (chainedAdaptable == null) {
+				return false;
+			} else {
+				return chainedAdaptable.supportsAdapter(adapterClass);
+			}
+		}
 	}
 
 	public <T> T adapt(Class<T> adapterClass)
 			throws UnsupportedAdapterException {
 		if (adapterClass == null) {
-			throw new IllegalArgumentException("adapterClass must not be null");
+			throw new IllegalArgumentException(
+					"adapterClass must not be null");
 		}
+		final String adapterClassName = adapterClass.getName();
 		final AdapterEntry adapterEntry = adapterMap
-				.get(adapterClass.getName());
+				.get(adapterClassName);
 		if (adapterEntry == null) {
-			throw new UnsupportedAdapterException(adapterClass);
+			final Adaptable chainedAdaptable = chainedAdapterMap.get(adapterClassName);
+			if (chainedAdaptable == null) {
+				throw new UnsupportedAdapterException(adapterClass);
+			} else {
+				return chainedAdaptable.adapt(adapterClass);
+			}
 		}
 		return adapterClass.cast(adapterEntry.getAdapter());
 	}

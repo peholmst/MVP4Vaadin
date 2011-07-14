@@ -27,7 +27,7 @@ public interface Adaptable extends java.io.Serializable {
 	 * Checks whether the adaptable supports the specified adapter class.
 	 * 
 	 * @param adapterClass
-	 *            the adapter class (must not be null).
+	 *            the adapter class (must not be <code>null</code>).
 	 * @return true if the adapter class is supported, false otherwise.
 	 */
 	boolean supportsAdapter(Class<?> adapterClass);
@@ -37,7 +37,7 @@ public interface Adaptable extends java.io.Serializable {
 	 * 
 	 * @param adapterClass
 	 *            the adapter class.
-	 * @return an instance of the adapter class (must not be null).
+	 * @return an instance of the adapter class (must not be <code>null</code>).
 	 * @throws UnsupportedAdapterException
 	 *             if the adapter class is not supported.
 	 */

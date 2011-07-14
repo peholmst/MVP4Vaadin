@@ -40,85 +40,54 @@ public interface ControllableView extends View {
 	ViewController getViewController();
 
 	/**
-	 * Returns whether the view is the current view of its controller. If the
-	 * view is not attached to a controller, this method always returns false.
-	 */
-	boolean isCurrentViewOfViewController();
-
-	/**
 	 * This method is called when the view is attached to the specified view
 	 * controller (i.e. added to the stack).
+	 * 
+	 * @param controller
+	 *            the view controller to which the view was attached.
+	 * @param userData
+	 *            a map of user-definable parameters (may be <code>null</code>).
 	 */
-	void attachedToController(ViewController controller);
+	void attachedToController(ViewController controller,
+			Map<String, Object> userData);
 
 	/**
 	 * This method is called when the view is detached from the specified view
 	 * controller (i.e. removed from the stack).
+	 * 
+	 * @param controller
+	 *            the view controller from which the view was detached.
 	 */
 	void detachedFromController(ViewController controller);
 
 	/**
-	 * This method is called when the controller has navigated to the view from
-	 * a view lower down in the stack (or when the stack is empty). When this
-	 * method is called, the view is the current view of the controller.
+	 * This method is called when the specified view controller attempts to
+	 * detach the view. The view can prevent this from happening by returning
+	 * false, in which case the view will become the current view. If the view
+	 * returns true, it will be detached and
+	 * {@link #detachedFromController(ViewController)} will be called.
 	 * 
-	 * @param userData
-	 *            a map of user-definable parameters (may be <code>null</code>).
-	 * @param fromView
-	 *            the view from which the controller navigated to this view (may
-	 *            be <code>null</code> if this view is the first view to be
-	 *            shown).
+	 * @param controller
+	 *            the view controller from which the view is being detached.
+	 * @return true to allow the view from being detached, false to prevent it.
 	 */
-	void navigatedUpToView(Map<String, Object> userData,
-			ControllableView fromView);
+	boolean detachingFromController(ViewController controller);
 
 	/**
-	 * This method is called when the controller has navigated to the view from
-	 * a view higher up in the stack. When this method is called, the view is
-	 * the current view of the controller.
-	 * 
-	 * @param fromView
-	 *            the view from which the controller navigated to this view
-	 *            (never <code>null</code>).
+	 * Returns whether the view is the current view of its controller. If the
+	 * view is not attached to a controller, this method always returns false.
 	 */
-	void navigatedDownToView(ControllableView fromView);
-
+	boolean isCurrentViewOfViewController();
+		
+	void navigatedForwardToView(ControllableView fromView);
+	
+	void navigatedBackwardToView(ControllableView fromView);
+	
 	/**
-	 * This method is called when the controller has navigated away from the
-	 * view. When this method is called, <code>toView</code> is the current view
-	 * of the controller.
-	 * 
+	 * This method is called when the controller navigates away from this view
+	 * to the next view in the stack.
 	 * @param toView
-	 *            the view to which the controller navigated from this view
-	 *            (never <code>null</code>).
 	 */
-	void navigatedAwayFromView(ControllableView toView);
+	void navigatedToNextView(ControllableView toView);
 
-	/**
-	 * Returns whether the view allows the controller to navigate to another
-	 * view higher up in the stack. The view need not be the current view when
-	 * this method is called.
-	 */
-	boolean mayNavigateUp();
-
-	/**
-	 * Returns whether the view allows the controller to navigate to another
-	 * view lower down in the stack. The view need not be the current view when
-	 * this method is called.
-	 */
-	boolean mayNavigateDown();
-
-	/**
-	 * Returns whether the view can remain in the stack after the controller has
-	 * navigated to a view lower down in the stack.
-	 * <p>
-	 * If this method returns true, the view may choose when to detach the view
-	 * and can also navigate up to the view if necessary (e.g. if the user
-	 * interface has a "Forward" button as in a web browser).
-	 * <p>
-	 * If this method returns false, the view and and any views on top of it in
-	 * the stack will be detached as soon as the controller has navigated past
-	 * it.
-	 */
-	boolean canRemainInStackAfterDownNavigation();
 }

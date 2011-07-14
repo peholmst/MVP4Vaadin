@@ -27,6 +27,7 @@ import com.github.peholmst.mvp4vaadin.View;
  * @author Petter Holmström
  * @since 1.0
  */
+@Deprecated
 public interface ControllableView extends View {
 
 	/**

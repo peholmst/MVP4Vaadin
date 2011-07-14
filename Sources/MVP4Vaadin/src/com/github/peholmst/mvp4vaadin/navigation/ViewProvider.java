@@ -27,6 +27,7 @@ package com.github.peholmst.mvp4vaadin.navigation;
  * @author Petter Holmström
  * @since 1.0
  */
+@Deprecated
 public interface ViewProvider extends java.io.Serializable {
 
 	/**

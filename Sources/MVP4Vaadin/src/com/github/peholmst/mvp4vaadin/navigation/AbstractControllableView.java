@@ -30,6 +30,7 @@ import com.github.peholmst.mvp4vaadin.AbstractView;
  * @param <P>
  *            the type of the Presenter.
  */
+@Deprecated
 public abstract class AbstractControllableView<V extends ControllableView, P extends ControllablePresenter<V>>
 		extends AbstractView<V, P> implements ControllableView {
 

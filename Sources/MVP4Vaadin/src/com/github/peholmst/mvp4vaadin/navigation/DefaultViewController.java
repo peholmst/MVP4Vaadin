@@ -32,6 +32,7 @@ import com.github.peholmst.mvp4vaadin.navigation.ControllableView.HideOperation;
  * @author Petter Holmström
  * @since 1.0
  */
+@Deprecated
 public class DefaultViewController implements ViewController {
 
 	private static final long serialVersionUID = -8268392494366653976L;

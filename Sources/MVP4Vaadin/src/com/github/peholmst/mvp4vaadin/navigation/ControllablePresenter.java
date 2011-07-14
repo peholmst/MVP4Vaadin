@@ -15,6 +15,7 @@ import com.github.peholmst.mvp4vaadin.Presenter;
  * @param <V>
  *            the type of the View that uses the Presenter.
  */
+@Deprecated
 public abstract class ControllablePresenter<V extends ControllableView> extends
 		Presenter<V> {
 

@@ -25,6 +25,7 @@ import java.util.Map;
  * @author Petter Holmström
  * @since 1.0
  */
+@Deprecated
 public interface InitializingViewProvider extends ViewProvider {
 
 	/**

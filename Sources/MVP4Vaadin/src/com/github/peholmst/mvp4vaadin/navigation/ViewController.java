@@ -43,6 +43,7 @@ import java.util.Map;
  * @author Petter Holmström
  * @since 1.0
  */
+@Deprecated
 public interface ViewController extends java.io.Serializable {
 	/**
 	 * Gets the current view, if available. If the stack is empty,

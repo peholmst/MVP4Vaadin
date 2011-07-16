@@ -15,7 +15,7 @@
  */
 package com.github.peholmst.mvp4vaadin;
 
-import com.github.peholmst.mvp4vaadin.util.Adaptable;
+import com.github.peholmst.stuff4vaadin.adapter.Adaptable;
 
 /**
  * This interface represents a View in the Model-View-Presenter (MVP) pattern.

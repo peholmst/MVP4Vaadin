@@ -22,9 +22,9 @@ import java.util.logging.Logger;
 import com.github.peholmst.mvp4vaadin.events.DescriptionChangedViewEvent;
 import com.github.peholmst.mvp4vaadin.events.DisplayNameChangedViewEvent;
 import com.github.peholmst.mvp4vaadin.events.InitializedViewEvent;
-import com.github.peholmst.mvp4vaadin.util.Adaptable;
-import com.github.peholmst.mvp4vaadin.util.AdaptableSupport;
-import com.github.peholmst.mvp4vaadin.util.UnsupportedAdapterException;
+import com.github.peholmst.stuff4vaadin.adapter.Adaptable;
+import com.github.peholmst.stuff4vaadin.adapter.AdaptableSupport;
+import com.github.peholmst.stuff4vaadin.adapter.UnsupportedAdapterException;
 
 /**
  * This class is intended to be used as a delegate by {@link View}

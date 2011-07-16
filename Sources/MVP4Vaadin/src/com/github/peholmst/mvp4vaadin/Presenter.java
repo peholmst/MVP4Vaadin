@@ -15,9 +15,9 @@
  */
 package com.github.peholmst.mvp4vaadin;
 
-import com.github.peholmst.mvp4vaadin.util.Adaptable;
-import com.github.peholmst.mvp4vaadin.util.AdaptableSupport;
-import com.github.peholmst.mvp4vaadin.util.UnsupportedAdapterException;
+import com.github.peholmst.stuff4vaadin.adapter.Adaptable;
+import com.github.peholmst.stuff4vaadin.adapter.AdaptableSupport;
+import com.github.peholmst.stuff4vaadin.adapter.UnsupportedAdapterException;
 
 /**
  * This is an abstract base class for Presenters in the Model-View-Presenter

@@ -38,6 +38,7 @@ import com.github.peholmst.mvp4vaadin.navigation.ControllableView.HideOperation;
  * @author Petter Holmström
  * @since 1.0
  */
+@Deprecated
 public class DefaultViewControllerTest {
 
 	DefaultViewController controller;

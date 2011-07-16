@@ -15,6 +15,11 @@
  */
 package com.github.peholmst.mvp4vaadin.navigation;
 
+import java.util.Map;
+
+import com.github.peholmst.mvp4vaadin.View;
+
+
 /**
  * TODO Define and document me!
  * 
@@ -23,4 +28,41 @@ package com.github.peholmst.mvp4vaadin.navigation;
  */
 public interface NavigationControllerCallback extends java.io.Serializable {
 
+	/**
+	 * 
+	 * @param controller
+	 */
+	void attachedToController(NavigationController controller);
+	
+	/**
+	 * 
+	 * @param controller
+	 * @return
+	 */
+	boolean detachingFromController(NavigationController controller);
+	
+	/**
+	 * 
+	 * @param controller
+	 */
+	void detachedFromController(NavigationController controller);
+	
+	/**
+	 * 
+	 * @param userData
+	 * @param fromView
+	 */
+	void navigatedForwardToView(Map<String, Object> userData, View fromView);
+	
+	/**
+	 * 
+	 * @param fromView
+	 */
+	void navigatedBackwardToView(View fromView);
+
+	/**
+	 * 
+	 * @param toView
+	 */
+	void navigatedForwardFromView(View toView);
 }

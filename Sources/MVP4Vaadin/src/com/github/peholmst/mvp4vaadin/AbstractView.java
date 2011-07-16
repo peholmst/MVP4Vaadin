@@ -17,8 +17,8 @@ package com.github.peholmst.mvp4vaadin;
 
 import javax.annotation.PostConstruct;
 
-import com.github.peholmst.mvp4vaadin.util.AdaptableSupport;
-import com.github.peholmst.mvp4vaadin.util.UnsupportedAdapterException;
+import com.github.peholmst.stuff4vaadin.adapter.AdaptableSupport;
+import com.github.peholmst.stuff4vaadin.adapter.UnsupportedAdapterException;
 
 /**
  * This is an abstract base class for {@link View} implementations. It has been
@@ -53,6 +53,11 @@ public abstract class AbstractView<V extends View, P extends Presenter<V>>
 	/**
 	 * Creates a new <code>AbstractView</code> and optionally initializes it by
 	 * calling {@link #init()}.
+	 * <p>
+	 * Please note that the {@link #init()} method is annotated with
+	 * <code>@PostConstruct</code>, so if you are using Spring or CDI to create
+	 * the view, the method will be invoked automatically and you don't have to
+	 * use this constructor at all.
 	 * 
 	 * @param initialize
 	 *            true to initialize the view directly, false to manually

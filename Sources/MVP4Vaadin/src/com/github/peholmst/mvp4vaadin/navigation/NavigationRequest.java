@@ -15,6 +15,11 @@
  */
 package com.github.peholmst.mvp4vaadin.navigation;
 
+import java.util.List;
+import java.util.Map;
+
+import com.github.peholmst.mvp4vaadin.View;
+
 /**
  * TODO Define and document me!
  * 
@@ -22,5 +27,17 @@ package com.github.peholmst.mvp4vaadin.navigation;
  * @since 1.0
  */
 public interface NavigationRequest extends java.io.Serializable {
+
+	/**
+	 * 
+	 * @return
+	 */
+	Map<String, Object> getUserData();
+
+	/**
+	 * 
+	 * @return
+	 */
+	List<View> getPath();
 
 }

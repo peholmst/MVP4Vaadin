@@ -27,6 +27,7 @@ import org.junit.Test;
  * @author Petter Holmström
  * @since 1.0
  */
+@Deprecated
 public class DefaultViewProviderTest {
 
 	DefaultViewProvider viewProvider;

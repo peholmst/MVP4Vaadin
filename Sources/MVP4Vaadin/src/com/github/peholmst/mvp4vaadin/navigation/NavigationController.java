@@ -27,21 +27,87 @@ import com.github.peholmst.mvp4vaadin.View;
  */
 public interface NavigationController extends java.io.Serializable {
 
-	boolean navigate(NavigationRequest request);
+	/**
+	 * Enumeration defining the result of the
+	 * {@link NavigationController#navigate(NavigationRequest)} method.
+	 * 
+	 * @author Petter Holmström
+	 * @since 1.0
+	 */
+	enum NavigationResult {
+		/**
+		 * The navigation request was prevented. The current view was not
+		 * changed.
+		 */
+		PREVENTED,
 
+		/**
+		 * The navigation request succeeded. The current view was changed to the
+		 * view addressed by the navigation request.
+		 */
+		SUCCEEDED,
+		/**
+		 * The navigation request was interrupted. The current view did change,
+		 * but not to the view addressed by the navigation request.
+		 */
+		INTERRUPTED
+	}
+
+	/**
+	 * 
+	 * @param request
+	 *            the request indicating to which view the controller should
+	 *            navigate (must not be <code>null</code>).
+	 * @return the result of the navigation (see {@link NavigationRequest} for
+	 *         more information).
+	 */
+	NavigationResult navigate(NavigationRequest request);
+
+	/**
+	 * 
+	 * @return
+	 */
 	boolean navigateBack();
-		
+
+	/**
+	 * 
+	 * @return
+	 */
 	List<View> getViewStack();
-	
+
+	/**
+	 * 
+	 * @return
+	 */
 	View getCurrentView();
-	
+
+	/**
+	 * 
+	 * @return
+	 */
 	View getFirstView();
 
+	/**
+	 * 
+	 * @return
+	 */
 	boolean isEmpty();
-	
+
+	/**
+	 * 
+	 * @return
+	 */
 	boolean clear();
-	
+
+	/**
+	 * 
+	 * @param listener
+	 */
 	void addListener(NavigationControllerListener listener);
-	
+
+	/**
+	 * 
+	 * @param listener
+	 */
 	void removeListener(NavigationControllerListener listener);
 }

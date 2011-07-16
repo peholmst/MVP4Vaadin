@@ -15,6 +15,10 @@
  */
 package com.github.peholmst.mvp4vaadin.navigation;
 
+import java.util.Map;
+
+import com.github.peholmst.mvp4vaadin.View;
+
 /**
  * TODO Define and document me!
  * 
@@ -24,5 +28,60 @@ package com.github.peholmst.mvp4vaadin.navigation;
 public class NavigationControllerCallbackAdapter implements NavigationControllerCallback {
 
 	private static final long serialVersionUID = -4007523174344250137L;
+
+	/* (non-Javadoc)
+	 * @see com.github.peholmst.mvp4vaadin.navigation.NavigationControllerCallback#attachedToController(com.github.peholmst.mvp4vaadin.navigation.NavigationController)
+	 */
+	@Override
+	public void attachedToController(NavigationController controller) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see com.github.peholmst.mvp4vaadin.navigation.NavigationControllerCallback#detachingFromController(com.github.peholmst.mvp4vaadin.navigation.NavigationController)
+	 */
+	@Override
+	public boolean detachingFromController(NavigationController controller) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.github.peholmst.mvp4vaadin.navigation.NavigationControllerCallback#detachedFromController(com.github.peholmst.mvp4vaadin.navigation.NavigationController)
+	 */
+	@Override
+	public void detachedFromController(NavigationController controller) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see com.github.peholmst.mvp4vaadin.navigation.NavigationControllerCallback#navigatedForwardToView(java.util.Map, com.github.peholmst.mvp4vaadin.View)
+	 */
+	@Override
+	public void navigatedForwardToView(Map<String, Object> userData,
+			View fromView) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see com.github.peholmst.mvp4vaadin.navigation.NavigationControllerCallback#navigatedBackwardToView(com.github.peholmst.mvp4vaadin.View)
+	 */
+	@Override
+	public void navigatedBackwardToView(View fromView) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see com.github.peholmst.mvp4vaadin.navigation.NavigationControllerCallback#navigatedForwardFromView(com.github.peholmst.mvp4vaadin.View)
+	 */
+	@Override
+	public void navigatedForwardFromView(View toView) {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

@@ -15,7 +15,6 @@
  */
 package com.github.peholmst.mvp4vaadin;
 
-import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -25,6 +24,8 @@ import com.github.peholmst.mvp4vaadin.events.InitializedViewEvent;
 import com.github.peholmst.stuff4vaadin.adapter.Adaptable;
 import com.github.peholmst.stuff4vaadin.adapter.AdaptableSupport;
 import com.github.peholmst.stuff4vaadin.adapter.UnsupportedAdapterException;
+import com.github.peholmst.stuff4vaadin.visitor.VisitableList;
+import com.github.peholmst.stuff4vaadin.visitor.Visitor;
 
 /**
  * This class is intended to be used as a delegate by {@link View}
@@ -51,7 +52,7 @@ public class ViewDelegate<V extends View, P extends Presenter<V>> implements
 
 	private String description;
 
-	private final LinkedList<ViewListener> listenerList = new LinkedList<ViewListener>();
+	private final VisitableList<ViewListener> listenerList = new VisitableList<ViewListener>();
 
 	private boolean initialized = false;
 
@@ -189,23 +190,19 @@ public class ViewDelegate<V extends View, P extends Presenter<V>> implements
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public void fireViewEvent(ViewEvent event) {
+	public void fireViewEvent(final ViewEvent event) {
 		if (event == null) {
 			return;
 		}
 		getLogger().log(Level.FINE, "Firing event {0}", event);
-		/*
-		 * Create a clone of the listener list. This way, we prevent weird
-		 * situations if any of the listeners register new listeners or remove
-		 * existing ones.
-		 */
-		LinkedList<ViewListener> clonedList = (LinkedList<ViewListener>) listenerList
-				.clone();
-		for (ViewListener listener : clonedList) {
-			listener.handleViewEvent(event);
-		}
+		listenerList.visitItems(new Visitor<ViewListener>() {
+
+			@Override
+			public void visit(ViewListener visitable) {
+				visitable.handleViewEvent(event);
+			}
+		});
 	}
 
 	@Override

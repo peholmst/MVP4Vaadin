@@ -24,7 +24,9 @@ import com.github.peholmst.mvp4vaadin.navigation.ViewController;
  * 
  * @author Petter Holmström
  * @since 1.0
+ * @deprecated Will be deleted in the 1.0 release
  */
+@Deprecated
 public class IdentifiableNestedControllersMaster extends
 		NestedControllersMaster {
 

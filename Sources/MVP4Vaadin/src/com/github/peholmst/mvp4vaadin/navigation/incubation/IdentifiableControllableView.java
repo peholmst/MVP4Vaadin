@@ -28,7 +28,9 @@ import com.github.peholmst.mvp4vaadin.navigation.ControllableView;
  * 
  * @author Petter Holmström
  * @since 1.0
+ * @deprecated Will be deleted in the 1.0 release
  */
+@Deprecated
 public interface IdentifiableControllableView extends ControllableView {
 
 	/**

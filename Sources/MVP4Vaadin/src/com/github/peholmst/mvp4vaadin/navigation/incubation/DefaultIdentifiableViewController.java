@@ -25,7 +25,9 @@ import com.github.peholmst.mvp4vaadin.navigation.DefaultViewController;
  * 
  * @author Petter Holmström
  * @since 1.0
+ * @deprecated Will be deleted in the 1.0 release
  */
+@Deprecated
 public class DefaultIdentifiableViewController extends DefaultViewController
 		implements IdentifiableViewController {
 

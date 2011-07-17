@@ -26,8 +26,9 @@ import com.github.peholmst.mvp4vaadin.navigation.ViewControllerListener;
  * TODO Document me!
  * 
  * @author Petter Holmström
- * 
+ * @deprecated Will be deleted in the 1.0 release
  */
+@Deprecated
 public class NestedControllersMaster implements java.io.Serializable {
 
 	private static final long serialVersionUID = 7878176235648881833L;

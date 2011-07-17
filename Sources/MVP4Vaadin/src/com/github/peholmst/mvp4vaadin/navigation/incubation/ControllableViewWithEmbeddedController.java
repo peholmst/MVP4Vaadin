@@ -24,7 +24,9 @@ import com.github.peholmst.mvp4vaadin.navigation.ViewController;
  * {@link NestedControllersMaster} class for more information.
  * 
  * @author Petter Holmström
+ * @deprecated Will be deleted in the 1.0 release
  */
+@Deprecated
 public interface ControllableViewWithEmbeddedController extends
 		ControllableView {
 

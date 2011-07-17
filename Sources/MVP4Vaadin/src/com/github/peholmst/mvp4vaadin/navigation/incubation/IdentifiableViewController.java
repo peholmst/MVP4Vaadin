@@ -25,7 +25,9 @@ import com.github.peholmst.mvp4vaadin.navigation.ViewController;
  * @see IdentifiableControllableView
  * 
  * @author Petter Holmström
+ * @deprecated Will be deleted in the 1.0 release
  */
+@Deprecated
 public interface IdentifiableViewController extends ViewController {
 
 	/**

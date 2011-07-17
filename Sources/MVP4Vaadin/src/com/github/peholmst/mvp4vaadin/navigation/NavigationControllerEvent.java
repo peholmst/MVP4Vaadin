@@ -15,23 +15,34 @@
  */
 package com.github.peholmst.mvp4vaadin.navigation;
 
+import java.util.EventObject;
+
 /**
- * Listener interface to be implemented by classes that need to be notified of
- * {@link NavigationControllerEvent}s.
+ * Base class for events that are fired by a {@link NavigationController}.
  * 
- * @see NavigationController#addListener(NavigationControllerListener)
- * @see NavigationController#removeListener(NavigationControllerListener)
+ * @see NavigationControllerListener
  * 
  * @author Petter Holmström
  * @since 1.0
  */
-public interface NavigationControllerListener extends java.io.Serializable {
+public abstract class NavigationControllerEvent extends EventObject {
+
+	private static final long serialVersionUID = -8300699828827743503L;
 
 	/**
-	 * Called when <code>event</code> has occurred.
+	 * Creates a new <code>NavigationControllerEvent</code>.
 	 * 
-	 * @param event
-	 *            the event (must not be <code>null</code>).
+	 * @param source
+	 *            the navigation controller in which the event originally
+	 *            occurred (must not be <code>null</code>).
 	 */
-	void handleNavigationControllerEvent(NavigationControllerEvent event);
+	public NavigationControllerEvent(NavigationController source) {
+		super(source);
+	}
+
+	@Override
+	public NavigationController getSource() {
+		return (NavigationController) super.getSource();
+	}
+
 }

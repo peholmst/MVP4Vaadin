@@ -15,7 +15,11 @@
  */
 package com.github.peholmst.mvp4vaadin.navigation;
 
+import java.util.Collections;
+import java.util.EmptyStackException;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Stack;
 
 import com.github.peholmst.mvp4vaadin.View;
 
@@ -28,11 +32,17 @@ import com.github.peholmst.mvp4vaadin.View;
 public class DefaultNavigationController implements NavigationController {
 
 	private static final long serialVersionUID = 6838003395877804584L;
-
+	
+	private final Stack<View> viewStack = new Stack<View>();
+	
 	@Override
 	public NavigationResult navigate(NavigationRequest request) {
-		// TODO Auto-generated method stub
-		return null;
+		for (View viewInPath : request.getPath()) {
+			if (!viewStack.contains(viewInPath)) {
+				viewStack.add(viewInPath);
+			}
+		}
+		return NavigationResult.SUCCEEDED;
 	}
 
 	@Override
@@ -43,26 +53,37 @@ public class DefaultNavigationController implements NavigationController {
 
 	@Override
 	public List<View> getViewStack() {
-		// TODO Auto-generated method stub
-		return null;
+		return Collections.unmodifiableList(viewStack);
 	}
 
+	/**
+	 * This method is intended for unit testing only! Do not use for anything else!
+	 */
+	Stack<View> getModifiableViewStack() {
+		return viewStack;
+	}
+	
 	@Override
 	public View getCurrentView() {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			return viewStack.peek();
+		} catch (EmptyStackException e) {
+			return null;
+		}
 	}
 
 	@Override
 	public View getFirstView() {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			return viewStack.firstElement();
+		} catch (NoSuchElementException e) {
+			return null;
+		}
 	}
 
 	@Override
 	public boolean isEmpty() {
-		// TODO Auto-generated method stub
-		return false;
+		return viewStack.isEmpty();
 	}
 
 	@Override

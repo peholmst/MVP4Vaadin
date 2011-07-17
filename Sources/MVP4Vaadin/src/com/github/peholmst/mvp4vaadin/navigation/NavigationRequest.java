@@ -21,7 +21,10 @@ import java.util.Map;
 import com.github.peholmst.mvp4vaadin.View;
 
 /**
- * TODO Define and document me!
+ * This interface defines a navigation request that is used to instruct a
+ * navigation controller to navigate to a specific view.
+ * 
+ * @see NavigationController
  * 
  * @author Petter Holmström
  * @since 1.0
@@ -29,14 +32,17 @@ import com.github.peholmst.mvp4vaadin.View;
 public interface NavigationRequest extends java.io.Serializable {
 
 	/**
+	 * Returns a map of user definable parameters that will be passed to the
+	 * view. If no parameters have been defined, an empty map is returned.
 	 * 
-	 * @return
+	 * @see NavigationControllerCallback#navigatedBackwardToView(Map, View)
+	 * @see NavigationControllerCallback#navigatedForwardToView(Map, View)
 	 */
-	Map<String, Object> getUserData();
+	Map<String, Object> getParams();
 
 	/**
-	 * 
-	 * @return
+	 * Returns the path to the destination view. The last view in the path is
+	 * the destination view.
 	 */
 	List<View> getPath();
 

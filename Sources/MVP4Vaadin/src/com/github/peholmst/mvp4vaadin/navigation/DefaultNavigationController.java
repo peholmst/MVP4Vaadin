@@ -18,6 +18,7 @@ package com.github.peholmst.mvp4vaadin.navigation;
 import java.util.Collections;
 import java.util.EmptyStackException;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Stack;
 
@@ -32,23 +33,153 @@ import com.github.peholmst.mvp4vaadin.View;
 public class DefaultNavigationController implements NavigationController {
 
 	private static final long serialVersionUID = 6838003395877804584L;
-	
+
 	private final Stack<View> viewStack = new Stack<View>();
-	
+
 	@Override
 	public NavigationResult navigate(NavigationRequest request) {
-		for (View viewInPath : request.getPath()) {
-			if (!viewStack.contains(viewInPath)) {
-				viewStack.add(viewInPath);
+		final View fromView = getCurrentView();
+
+		final int differenceIndex = getIndexOfFirstDifferenceFromStack(request);
+		if (differenceIndex == viewStack.size()) {
+			// We're attaching new stacks to the view
+			attachRemainingViewsInRequest(request);
+			if (fromView != null) {
+				invokeNavigatedFromViewOnView(fromView);
 			}
+		} else {
+			// We have to detach some views (including the current view) before
+			// we can attach new views
+			final NavigationResult result = detachViewsFromStack(differenceIndex);
+			if (result.equals(NavigationResult.SUCCEEDED)) {
+				attachRemainingViewsInRequest(request);
+			} else {
+				return result;
+			}
+		}
+		invokeNavigatedToViewOnCurrentView(request.getParams(), fromView);
+		return NavigationResult.SUCCEEDED;
+	}
+
+	/**
+	 * Compares the request path to the view stack. The returned value is the
+	 * index of the first element that differs between these two.
+	 */
+	private int getIndexOfFirstDifferenceFromStack(NavigationRequest request) {
+		final List<View> path = request.getPath();
+		for (int i = 0; i < viewStack.size(); ++i) {
+			final View viewInStack = viewStack.get(i);
+			if (i < path.size()) {
+				final View viewInPath = path.get(i);
+				if (!viewInStack.equals(viewInPath)) {
+					return i;
+				}
+			} else {
+				return i;
+			}
+		}
+		return viewStack.size();
+	}
+
+	/**
+	 * If the request path contains more elements than the view stack, the
+	 * remaining views from the path are added to the stack. No comparison of
+	 * the stack and the request path is made.
+	 */
+	private void attachRemainingViewsInRequest(NavigationRequest request) {
+		for (int i = viewStack.size(); i < request.getPath().size(); ++i) {
+			final View viewInPath = request.getPath().get(i);
+			attach(viewInPath);
+		}
+	}
+
+	/**
+	 * Adds the view to the view stack.
+	 */
+	private void attach(View view) {
+		viewStack.add(view);
+		if (view.supportsAdapter(NavigationControllerCallback.class)) {
+			view.adapt(NavigationControllerCallback.class)
+					.attachedToController(this);
+		}
+	}
+
+	/**
+	 * Detaches all the views from the start, starting from the top-most view
+	 * and going downwards until the view at
+	 * <code>indexOfFinalViewToDetach</code> has been detached.
+	 * 
+	 * @return {@link NavigationResult#PREVENTED} if the top-most view aborted
+	 *         the operation, {@link NavigationResult#INTERRUPTED} if any of the
+	 *         other views aborted the operation, or
+	 *         {@link NavigationResult#SUCCEEDED} if all the views were
+	 *         detached.
+	 */
+	private NavigationResult detachViewsFromStack(int indexOfFinalViewToDetach) {
+		boolean currentViewRemoved = false;
+		while (viewStack.size() > indexOfFinalViewToDetach) {
+			if (!detachTopmostView()) {
+				if (currentViewRemoved) {
+					return NavigationResult.INTERRUPTED;
+				} else {
+					return NavigationResult.PREVENTED;
+				}
+			}
+			currentViewRemoved = true;
 		}
 		return NavigationResult.SUCCEEDED;
 	}
 
+	/**
+	 * Attempts to remove the top-most view from the stack. Returns true on
+	 * success and false on failure.
+	 */
+	private boolean detachTopmostView() {
+		final View view = viewStack.peek();
+		if (view.supportsAdapter(NavigationControllerCallback.class)) {
+			if (!view.adapt(NavigationControllerCallback.class)
+					.detachingFromController(this)) {
+				return false;
+			}
+			viewStack.pop();
+			view.adapt(NavigationControllerCallback.class)
+					.detachedFromController(this);
+		} else {
+			viewStack.pop();
+		}
+		return true;
+	}
+
+	private void invokeNavigatedToViewOnCurrentView(Map<String, Object> params,
+			View fromView) {
+		if (!viewStack.isEmpty()) {
+			if (getCurrentView().supportsAdapter(
+					NavigationControllerCallback.class)) {
+				getCurrentView().adapt(NavigationControllerCallback.class)
+						.navigatedToView(params, fromView);
+			}
+		}
+	}
+
+	private void invokeNavigatedFromViewOnView(View fromView) {
+		if (fromView.supportsAdapter(NavigationControllerCallback.class)) {
+			fromView.adapt(NavigationControllerCallback.class)
+					.navigatedFromView(getCurrentView());
+		}
+	}
+
 	@Override
 	public boolean navigateBack() {
-		// TODO Auto-generated method stub
-		return false;
+		if (isEmpty()) {
+			return false;
+		} else if (viewStack.size() == 1) {
+			return clear() == NavigationResult.SUCCEEDED;
+		} else {
+			final NavigationRequest request = NavigationRequestBuilder
+					.newInstance().startWithPathToPreviousView(this)
+					.buildRequest();
+			return navigate(request) == NavigationResult.SUCCEEDED;
+		}
 	}
 
 	@Override
@@ -57,12 +188,13 @@ public class DefaultNavigationController implements NavigationController {
 	}
 
 	/**
-	 * This method is intended for unit testing only! Do not use for anything else!
+	 * This method is intended for unit testing only! Do not use for anything
+	 * else!
 	 */
 	Stack<View> getModifiableViewStack() {
 		return viewStack;
 	}
-	
+
 	@Override
 	public View getCurrentView() {
 		try {
@@ -88,20 +220,19 @@ public class DefaultNavigationController implements NavigationController {
 
 	@Override
 	public NavigationResult clear() {
-		// TODO Auto-generated method stub
-		return null;
+		return detachViewsFromStack(0);
 	}
 
 	@Override
 	public void addListener(NavigationControllerListener listener) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void removeListener(NavigationControllerListener listener) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

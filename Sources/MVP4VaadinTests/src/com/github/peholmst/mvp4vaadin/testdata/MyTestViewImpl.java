@@ -16,6 +16,7 @@
 package com.github.peholmst.mvp4vaadin.testdata;
 
 import com.github.peholmst.mvp4vaadin.AbstractView;
+import com.github.peholmst.stuff4vaadin.adapter.AdaptableSupport;
 
 /**
  * Test implementation of {@link MyTestView}.
@@ -33,5 +34,10 @@ public class MyTestViewImpl extends AbstractView<MyTestView, MyTestPresenter>
 
 	public MyTestViewImpl(boolean initialize) {
 		super(initialize);
+	}
+	
+	@Override
+	public AdaptableSupport getAdaptableSupport() {
+		return super.getAdaptableSupport();
 	}
 }

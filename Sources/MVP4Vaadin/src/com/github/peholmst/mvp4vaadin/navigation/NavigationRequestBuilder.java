@@ -153,7 +153,7 @@ public final class NavigationRequestBuilder {
 		}
 		verifyPathBulderNotSet();
 		pathBuilder = new PathBuilder(controller.getViewStack().subList(0,
-				controller.getViewStack().size() - 2));
+				controller.getViewStack().size() - 1));
 		return pathBuilder;
 	}
 

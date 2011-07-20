@@ -23,9 +23,17 @@ import java.util.NoSuchElementException;
 import java.util.Stack;
 
 import com.github.peholmst.mvp4vaadin.View;
+import com.github.peholmst.mvp4vaadin.navigation.events.CurrentNavigationControllerViewChangedEvent;
+import com.github.peholmst.mvp4vaadin.navigation.events.ViewAttachedToNavigationControllerEvent;
+import com.github.peholmst.mvp4vaadin.navigation.events.ViewDetachedFromNavigationControllerEvent;
+import com.github.peholmst.stuff4vaadin.visitor.VisitableList;
+import com.github.peholmst.stuff4vaadin.visitor.Visitor;
 
 /**
- * TODO Document and implement me!
+ * This is the default implementation of the {@link NavigationController}
+ * interface. Create a new instance using the default constructor and attach
+ * views using the {@link #navigate(NavigationRequest)} method. You can use the
+ * {@link NavigationRequestBuilder} to create {@link NavigationRequest}s.
  * 
  * @author Petter Holmström
  * @since 1.0
@@ -35,6 +43,8 @@ public class DefaultNavigationController implements NavigationController {
 	private static final long serialVersionUID = 6838003395877804584L;
 
 	private final Stack<View> viewStack = new Stack<View>();
+
+	private final VisitableList<NavigationControllerListener> listeners = new VisitableList<NavigationControllerListener>();
 
 	@Override
 	public NavigationResult navigate(NavigationRequest request) {
@@ -54,10 +64,16 @@ public class DefaultNavigationController implements NavigationController {
 			if (result.equals(NavigationResult.SUCCEEDED)) {
 				attachRemainingViewsInRequest(request);
 			} else {
+				if (result.equals(NavigationResult.INTERRUPTED)) {
+					fireEvent(new CurrentNavigationControllerViewChangedEvent(
+							this, fromView, getCurrentView()));
+				}
 				return result;
 			}
 		}
 		invokeNavigatedToViewOnCurrentView(request.getParams(), fromView);
+		fireEvent(new CurrentNavigationControllerViewChangedEvent(this,
+				fromView, getCurrentView()));
 		return NavigationResult.SUCCEEDED;
 	}
 
@@ -102,6 +118,7 @@ public class DefaultNavigationController implements NavigationController {
 			view.adapt(NavigationControllerCallback.class)
 					.attachedToController(this);
 		}
+		fireEvent(new ViewAttachedToNavigationControllerEvent(this, view));
 	}
 
 	/**
@@ -147,6 +164,7 @@ public class DefaultNavigationController implements NavigationController {
 		} else {
 			viewStack.pop();
 		}
+		fireEvent(new ViewDetachedFromNavigationControllerEvent(this, view));
 		return true;
 	}
 
@@ -220,19 +238,40 @@ public class DefaultNavigationController implements NavigationController {
 
 	@Override
 	public NavigationResult clear() {
-		return detachViewsFromStack(0);
+		final View oldView = getCurrentView();
+		final NavigationResult result = detachViewsFromStack(0);
+		if (getCurrentView() != oldView) {
+			fireEvent(new CurrentNavigationControllerViewChangedEvent(this,
+					oldView, getCurrentView()));
+		}
+		return result;
+	}
+
+	/**
+	 * Notifies all registered listeners of the specified event.
+	 */
+	protected void fireEvent(final NavigationControllerEvent event) {
+		listeners.visitItems(new Visitor<NavigationControllerListener>() {
+
+			@Override
+			public void visit(NavigationControllerListener visitable) {
+				visitable.handleNavigationControllerEvent(event);
+			}
+		});
 	}
 
 	@Override
 	public void addListener(NavigationControllerListener listener) {
-		// TODO Auto-generated method stub
-
+		if (listener != null) {
+			listeners.add(listener);
+		}
 	}
 
 	@Override
 	public void removeListener(NavigationControllerListener listener) {
-		// TODO Auto-generated method stub
-
+		if (listener != null) {
+			listeners.remove(listener);
+		}
 	}
 
 }

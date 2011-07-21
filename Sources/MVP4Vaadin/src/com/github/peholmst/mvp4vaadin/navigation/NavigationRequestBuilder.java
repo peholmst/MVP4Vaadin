@@ -79,9 +79,11 @@ public final class NavigationRequestBuilder<P extends NavigationRequestBuilder.P
 	}
 
 	/**
+	 * Base class for a path builder that builds the
+	 * {@link NavigationRequest#getPath() path} of a {@link NavigationRequest}.
 	 * 
-	 * @author petter
-	 * 
+	 * @author Petter Holmström
+	 * @since 1.0
 	 */
 	public static abstract class PathBuilder {
 
@@ -89,17 +91,22 @@ public final class NavigationRequestBuilder<P extends NavigationRequestBuilder.P
 		private final LinkedList<View> path = new LinkedList<View>();
 
 		/**
+		 * Creates a new <code>PathBuilder</code>.
 		 * 
 		 * @param requestBuilder
+		 *            the owning request builder.
 		 */
 		public PathBuilder(NavigationRequestBuilder<?> requestBuilder) {
 			this.requestBuilder = requestBuilder;
 		}
 
 		/**
+		 * Creates a new <code>PathBuilder</code>.
 		 * 
 		 * @param requestBuilder
+		 *            the owning request builder.
 		 * @param initialPath
+		 *            the initial path.
 		 */
 		public PathBuilder(NavigationRequestBuilder<?> requestBuilder,
 				List<View> initialPath) {
@@ -108,8 +115,7 @@ public final class NavigationRequestBuilder<P extends NavigationRequestBuilder.P
 		}
 
 		/**
-		 * 
-		 * @return
+		 * Returns the path to which views can be added.
 		 */
 		protected final LinkedList<View> getPath() {
 			return path;
@@ -292,10 +298,8 @@ public final class NavigationRequestBuilder<P extends NavigationRequestBuilder.P
 	}
 
 	/**
-	 * 
-	 * @param <P>
-	 * @param pathBuilderClass
-	 * @return
+	 * Returns a new navigation request builder instance that uses a path
+	 * builder of the specified class.
 	 */
 	public static <P extends PathBuilder> NavigationRequestBuilder<P> newInstance(
 			Class<P> pathBuilderClass) {

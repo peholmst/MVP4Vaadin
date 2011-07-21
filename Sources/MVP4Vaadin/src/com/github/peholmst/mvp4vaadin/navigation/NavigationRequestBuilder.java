@@ -15,6 +15,7 @@
  */
 package com.github.peholmst.mvp4vaadin.navigation;
 
+import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -26,7 +27,7 @@ import com.github.peholmst.mvp4vaadin.View;
 
 /**
  * This class implements a builder for creating new {@link NavigationRequest}
- * instances. This is how it is to be used:
+ * instances. This is how it is to be used, using the default path builder:
  * <ul>
  * <li>Create a new builder instance by calling {@link #newInstance()}.</li>
  * <li>Set any params you may have using {@link #setParam(String, Object)} or
@@ -34,56 +35,84 @@ import com.github.peholmst.mvp4vaadin.View;
  * <li>Create a path builder by calling one of the <code>startWith...</code>
  * methods.</li>
  * <li>Add additional views to the path using
- * {@link PathBuilder#addViewToPath(View)} or
- * {@link PathBuilder#addViewsToPath(View...)}.</li>
- * <li>Create the request by calling {@link PathBuilder#buildRequest()}.</li>
+ * {@link DefaultPathBuilder#addViewToPath(View)} or
+ * {@link DefaultPathBuilder#addViewsToPath(View...)}.</li>
+ * <li>Create the request by calling {@link DefaultPathBuilder#buildRequest()}.</li>
  * </ul>
+ * <p>
+ * Other path builders can be plugged in by using the
+ * {@link #newInstance(Class)} factory method.
  * 
  * @author Petter Holmström
  * @since 1.0
  */
-public final class NavigationRequestBuilder {
+public final class NavigationRequestBuilder<P extends NavigationRequestBuilder.PathBuilder> {
 
-	private NavigationRequestBuilder() {
-	}
+	private final Class<P> pathBuilderClass;
 
-	private PathBuilder pathBuilder;
+	private P pathBuilder;
 
 	private final HashMap<String, Object> params = new HashMap<String, Object>();
 
-	/**
-	 * A path builder is used to construct the path of the
-	 * {@link NavigationRequest}. The request itself is built by calling the
-	 * {@link #buildRequest()} method.
-	 * 
-	 * @author Petter Holmström
-	 * @since 1.0
-	 */
-	public final class PathBuilder {
+	private NavigationRequestBuilder(Class<P> pathBuilderClass) {
+		this.pathBuilderClass = pathBuilderClass;
+	}
 
+	private P createPathBuilder() {
+		try {
+			final Constructor<P> constructor = pathBuilderClass
+					.getConstructor(NavigationRequestBuilder.class);
+			return constructor.newInstance(this);
+		} catch (Exception e) {
+			throw new RuntimeException("Could not create path builder", e);
+		}
+	}
+
+	private P createPathBuilder(List<View> initialPath) {
+		try {
+			final Constructor<P> constructor = pathBuilderClass.getConstructor(
+					NavigationRequestBuilder.class, List.class);
+			return constructor.newInstance(this, initialPath);
+		} catch (Exception e) {
+			throw new RuntimeException("Could not create path builder", e);
+		}
+	}
+
+	/**
+	 * 
+	 * @author petter
+	 * 
+	 */
+	public static abstract class PathBuilder {
+
+		private final NavigationRequestBuilder<?> requestBuilder;
 		private final LinkedList<View> path = new LinkedList<View>();
 
-		private PathBuilder() {
+		/**
+		 * 
+		 * @param requestBuilder
+		 */
+		public PathBuilder(NavigationRequestBuilder<?> requestBuilder) {
+			this.requestBuilder = requestBuilder;
 		}
 
-		private PathBuilder(List<View> initialPath) {
+		/**
+		 * 
+		 * @param requestBuilder
+		 * @param initialPath
+		 */
+		public PathBuilder(NavigationRequestBuilder<?> requestBuilder,
+				List<View> initialPath) {
+			this(requestBuilder);
 			path.addAll(initialPath);
 		}
 
 		/**
-		 * Adds the specified view to the path.
+		 * 
+		 * @return
 		 */
-		public PathBuilder addViewToPath(View view) {
-			path.add(view);
-			return this;
-		}
-
-		/**
-		 * Adds the specified views to the path.
-		 */
-		public PathBuilder addViewsToPath(View... views) {
-			path.addAll(Arrays.asList(views));
-			return this;
+		protected final LinkedList<View> getPath() {
+			return path;
 		}
 
 		/**
@@ -95,14 +124,15 @@ public final class NavigationRequestBuilder {
 		 */
 		@SuppressWarnings("unchecked")
 		public NavigationRequest buildRequest() throws IllegalStateException {
-			if (path.isEmpty()) {
+			if (getPath().isEmpty()) {
 				throw new IllegalStateException(
 						"The path must contain at least one view");
 			}
 			final List<View> copyOfPath = Collections
-					.unmodifiableList((List<View>) path.clone());
+					.unmodifiableList((List<View>) getPath().clone());
 			final Map<String, Object> copyOfParams = Collections
-					.unmodifiableMap((Map<String, Object>) params.clone());
+					.unmodifiableMap((Map<String, Object>) requestBuilder.params
+							.clone());
 			return new NavigationRequest() {
 
 				private static final long serialVersionUID = -6273102646598049858L;
@@ -118,12 +148,50 @@ public final class NavigationRequestBuilder {
 				}
 			};
 		}
+
+	}
+
+	/**
+	 * A path builder is used to construct the path of the
+	 * {@link NavigationRequest}. The request itself is built by calling the
+	 * {@link #buildRequest()} method.
+	 * 
+	 * @author Petter Holmström
+	 * @since 1.0
+	 */
+	public static final class DefaultPathBuilder extends PathBuilder {
+
+		public DefaultPathBuilder(NavigationRequestBuilder<?> requestBuilder) {
+			super(requestBuilder);
+		}
+
+		public DefaultPathBuilder(NavigationRequestBuilder<?> requestBuilder,
+				List<View> initialPath) {
+			super(requestBuilder, initialPath);
+		}
+
+		/**
+		 * Adds the specified view to the path.
+		 */
+		public DefaultPathBuilder addViewToPath(View view) {
+			getPath().add(view);
+			return this;
+		}
+
+		/**
+		 * Adds the specified views to the path.
+		 */
+		public DefaultPathBuilder addViewsToPath(View... views) {
+			getPath().addAll(Arrays.asList(views));
+			return this;
+		}
 	}
 
 	/**
 	 * Sets the value of a single parameter to be passed to the view.
 	 */
-	public NavigationRequestBuilder setParam(String paramName, Object paramValue) {
+	public NavigationRequestBuilder<P> setParam(String paramName,
+			Object paramValue) {
 		params.put(paramName, paramValue);
 		return this;
 	}
@@ -131,78 +199,79 @@ public final class NavigationRequestBuilder {
 	/**
 	 * Sets the values of multiple parameters to be passed to the view.
 	 */
-	public NavigationRequestBuilder setParams(Map<String, Object> params) {
+	public NavigationRequestBuilder<P> setParams(Map<String, Object> params) {
 		params.putAll(params);
 		return this;
 	}
 
 	/**
-	 * Returns a {@link PathBuilder} that starts from the previous view (i.e.
-	 * the view behind the current view) of the specified view controller. This
-	 * path can be used to perform a "go back" navigation.
+	 * Returns a {@link DefaultPathBuilder} that starts from the previous view
+	 * (i.e. the view behind the current view) of the specified view controller.
+	 * This path can be used to perform a "go back" navigation.
 	 * 
 	 * @throws IllegalStateException
 	 *             if there are less than two views in the controller's stack,
 	 *             or if another path builder has already been created.
 	 */
-	public PathBuilder startWithPathToPreviousView(
-			NavigationController controller) throws IllegalStateException {
+	public P startWithPathToPreviousView(NavigationController controller)
+			throws IllegalStateException {
 		if (controller.getViewStack().size() < 2) {
 			throw new IllegalStateException(
 					"Not enough views in controller to start from the previous view");
 		}
 		verifyPathBulderNotSet();
-		pathBuilder = new PathBuilder(controller.getViewStack().subList(0,
+		pathBuilder = createPathBuilder(controller.getViewStack().subList(0,
 				controller.getViewStack().size() - 1));
 		return pathBuilder;
 	}
 
 	/**
-	 * Returns a {@link PathBuilder} that starts from the first view of the
-	 * specified view controller. This path can be used to perform a "go home"
-	 * navigation.
+	 * Returns a {@link DefaultPathBuilder} that starts from the first view of
+	 * the specified view controller. This path can be used to perform a
+	 * "go home" navigation.
 	 * 
 	 * @throws IllegalStateException
 	 *             if the controller's stack is empty, or if another path
 	 *             builder has already been created.
 	 */
-	public PathBuilder startWithPathToFirstView(NavigationController controller)
+	public P startWithPathToFirstView(NavigationController controller)
 			throws IllegalStateException {
 		if (controller.isEmpty()) {
 			throw new IllegalStateException(
 					"Controller is empty, cannot start from the first view");
 		}
 		verifyPathBulderNotSet();
-		pathBuilder = new PathBuilder(controller.getViewStack().subList(0, 1));
+		pathBuilder = createPathBuilder(controller.getViewStack().subList(0, 1));
 		return pathBuilder;
 	}
 
 	/**
-	 * Returns a {@link PathBuilder} that starts from the current view of the
-	 * specified view controller. This path can be used when adding a new view
-	 * to the stack. If the controller is empty, this call has the same effect
-	 * as using {@link #startWithEmptyPath()}.
+	 * Returns a {@link DefaultPathBuilder} that starts from the current view of
+	 * the specified view controller. This path can be used when adding a new
+	 * view to the stack. If the controller is empty, this call has the same
+	 * effect as using {@link #startWithEmptyPath()}.
 	 * 
 	 * @throws IllegalStateException
 	 *             if another path builder has already been created.
 	 */
-	public PathBuilder startWithPathToCurrentView(
-			NavigationController controller) throws IllegalStateException {
+	public P startWithPathToCurrentView(NavigationController controller)
+			throws IllegalStateException {
 		verifyPathBulderNotSet();
-		pathBuilder = new PathBuilder(controller.getViewStack());
+		pathBuilder = createPathBuilder(controller.getViewStack());
 		return pathBuilder;
 	}
 
 	/**
-	 * Returns a {@link PathBuilder} that starts with an empty path. At least
-	 * one view has to be added before the navigation request can be built.
+	 * Returns a {@link DefaultPathBuilder} that starts with an empty path. At
+	 * least one view has to be added before the navigation request can be
+	 * built.
 	 * 
 	 * @throws IllegalStateException
 	 *             if another path builder has already been created.
 	 */
-	public PathBuilder startWithEmptyPath() throws IllegalStateException {
+	public P startWithEmptyPath() throws IllegalStateException {
 		verifyPathBulderNotSet();
-		pathBuilder = new PathBuilder();
+		pathBuilder = createPathBuilder();
 		return pathBuilder;
 	}
 
@@ -214,10 +283,22 @@ public final class NavigationRequestBuilder {
 	}
 
 	/**
-	 * Returns a new navigation request builder instance.
+	 * Returns a new navigation request builder instance that uses the default
+	 * path builder.
 	 */
-	public static NavigationRequestBuilder newInstance() {
-		return new NavigationRequestBuilder();
+	public static NavigationRequestBuilder<DefaultPathBuilder> newInstance() {
+		return new NavigationRequestBuilder<DefaultPathBuilder>(
+				DefaultPathBuilder.class);
 	}
 
+	/**
+	 * 
+	 * @param <P>
+	 * @param pathBuilderClass
+	 * @return
+	 */
+	public static <P extends PathBuilder> NavigationRequestBuilder<P> newInstance(
+			Class<P> pathBuilderClass) {
+		return new NavigationRequestBuilder<P>(pathBuilderClass);
+	}
 }

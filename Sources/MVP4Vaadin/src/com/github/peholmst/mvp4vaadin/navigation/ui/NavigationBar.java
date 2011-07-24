@@ -47,7 +47,9 @@ import com.vaadin.ui.themes.BaseTheme;
  * 
  * @author Petter Holmström
  * @since 1.0
+ * @deprecated Will be removed in the 1.0 release, use {@link Breadcrumbs} instead.
  */
+@Deprecated
 public class NavigationBar extends CssLayout implements ViewControllerListener {
 
 	// TODO Even if forward navigation is possible, the current view should

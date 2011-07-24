@@ -211,9 +211,9 @@ public final class NavigationRequestBuilder<P extends NavigationRequestBuilder.P
 	}
 
 	/**
-	 * Returns a {@link DefaultPathBuilder} that starts from the previous view
-	 * (i.e. the view behind the current view) of the specified view controller.
-	 * This path can be used to perform a "go back" navigation.
+	 * Returns a {@link PathBuilder} that starts from the previous view (i.e.
+	 * the view behind the current view) of the specified view controller. This
+	 * path can be used to perform a "go back" navigation.
 	 * 
 	 * @throws IllegalStateException
 	 *             if there are less than two views in the controller's stack,
@@ -232,9 +232,9 @@ public final class NavigationRequestBuilder<P extends NavigationRequestBuilder.P
 	}
 
 	/**
-	 * Returns a {@link DefaultPathBuilder} that starts from the first view of
-	 * the specified view controller. This path can be used to perform a
-	 * "go home" navigation.
+	 * Returns a {@link PathBuilder} that starts from the first view of the
+	 * specified view controller. This path can be used to perform a "go home"
+	 * navigation.
 	 * 
 	 * @throws IllegalStateException
 	 *             if the controller's stack is empty, or if another path
@@ -252,10 +252,10 @@ public final class NavigationRequestBuilder<P extends NavigationRequestBuilder.P
 	}
 
 	/**
-	 * Returns a {@link DefaultPathBuilder} that starts from the current view of
-	 * the specified view controller. This path can be used when adding a new
-	 * view to the stack. If the controller is empty, this call has the same
-	 * effect as using {@link #startWithEmptyPath()}.
+	 * Returns a {@link PathBuilder} that starts from the current view of the
+	 * specified view controller. This path can be used when adding a new view
+	 * to the stack. If the controller is empty, this call has the same effect
+	 * as using {@link #startWithEmptyPath()}.
 	 * 
 	 * @throws IllegalStateException
 	 *             if another path builder has already been created.
@@ -268,9 +268,35 @@ public final class NavigationRequestBuilder<P extends NavigationRequestBuilder.P
 	}
 
 	/**
-	 * Returns a {@link DefaultPathBuilder} that starts with an empty path. At
-	 * least one view has to be added before the navigation request can be
-	 * built.
+	 * Returns a {@link PathBuilder} that starts from the path to the specified
+	 * view.
+	 * 
+	 * @throws IllegalStateException
+	 *             if another path builder has already been created or the
+	 *             specified view cannot be found in the controller.
+	 */
+	public P startWithPathToView(NavigationController controller, View view)
+			throws IllegalStateException {
+		verifyPathBulderNotSet();
+		LinkedList<View> path = new LinkedList<View>();
+		boolean found = false;
+		for (View viewInPath : controller.getViewStack()) {
+			path.add(viewInPath);
+			if (viewInPath.equals(view)) {
+				found = true;
+				break;
+			}
+		}
+		if (!found) {
+			throw new IllegalStateException("View not found in controller");
+		}
+		pathBuilder = createPathBuilder(path);
+		return pathBuilder;
+	}
+
+	/**
+	 * Returns a {@link PathBuilder} that starts with an empty path. At least
+	 * one view has to be added before the navigation request can be built.
 	 * 
 	 * @throws IllegalStateException
 	 *             if another path builder has already been created.

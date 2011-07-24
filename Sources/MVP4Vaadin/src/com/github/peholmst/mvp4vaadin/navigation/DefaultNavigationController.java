@@ -237,6 +237,11 @@ public class DefaultNavigationController implements NavigationController {
 	}
 
 	@Override
+	public boolean containsMoreThanOneElement() {
+		return viewStack.size() > 1;
+	}
+	
+	@Override
 	public NavigationResult clear() {
 		final View oldView = getCurrentView();
 		final NavigationResult result = detachViewsFromStack(0);

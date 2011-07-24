@@ -121,6 +121,12 @@ public interface NavigationController extends java.io.Serializable {
 	boolean isEmpty();
 
 	/**
+	 * Returns whether the stack contains more than one element. This method can
+	 * be useful when constructing breadcrumbs for example.
+	 */
+	boolean containsMoreThanOneElement();
+
+	/**
 	 * Attempts to remove all views from the stack.
 	 * 
 	 * @return {@link NavigationResult#SUCCEEDED} if the stack was cleared,

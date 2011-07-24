@@ -31,7 +31,10 @@ import com.vaadin.ui.VerticalLayout;
  * 
  * @author Petter Holmström
  * @since 1.0
+ * @deprecated Will be removed in the 1.0 release, use
+ *             {@link NavigationControllerViewComponent} instead.
  */
+@Deprecated
 public class ViewContainerComponent extends VerticalLayout implements
 		ViewControllerListener {
 
@@ -88,17 +91,19 @@ public class ViewContainerComponent extends VerticalLayout implements
 			setCurrentViewComponent();
 		}
 	}
-	
+
 	private void setCurrentViewComponent() {
 		if (currentViewComponent != null) {
 			removeComponent(currentViewComponent);
 			currentViewComponent = null;
 		}
-		
-		if (viewController != null && viewController.getCurrentView() instanceof VaadinView) {
-			currentViewComponent = ((VaadinView) viewController.getCurrentView()).getViewComponent();
+
+		if (viewController != null
+				&& viewController.getCurrentView() instanceof VaadinView) {
+			currentViewComponent = ((VaadinView) viewController
+					.getCurrentView()).getViewComponent();
 			addComponent(currentViewComponent);
-		}		
+		}
 	}
 
 }

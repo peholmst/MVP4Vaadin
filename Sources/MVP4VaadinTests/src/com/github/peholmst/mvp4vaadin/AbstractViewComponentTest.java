@@ -25,8 +25,10 @@ import org.junit.Test;
 
 import com.github.peholmst.mvp4vaadin.events.DisplayNameChangedViewEvent;
 import com.github.peholmst.mvp4vaadin.testdata.MyTestPresenter;
+import com.github.peholmst.mvp4vaadin.testdata.MyTestPresenter2;
 import com.github.peholmst.mvp4vaadin.testdata.MyTestView;
 import com.github.peholmst.mvp4vaadin.testdata.MyTestViewComponent;
+import com.github.peholmst.mvp4vaadin.testdata.MyTestViewComponent2;
 
 /**
  * Test case for {@link AbstractViewComponent}.
@@ -109,9 +111,17 @@ public class AbstractViewComponentTest {
 		assertSame(view, view.getViewComponent());
 	}
 	
-	@Test(expected = IllegalStateException.class)
-	public void createPresenterWithoutRequiredClasses() {
+	@Test
+	public void createPresenterUsingIntrospection() {
 		view = new MyTestViewComponent();
-		view.createPresenter();
+		MyTestPresenter createdPresenter = view.createPresenter();
+		assertSame(view, createdPresenter.getView());
+	}
+	
+	@Test
+	public void createPresenterUsingIntrospectionAndDefaultPresenterConstructor() {
+		MyTestViewComponent2 createdView = new MyTestViewComponent2();
+		MyTestPresenter2 createdPresenter = createdView.createPresenter();
+		assertSame(createdView, createdPresenter.getView());
 	}
 }

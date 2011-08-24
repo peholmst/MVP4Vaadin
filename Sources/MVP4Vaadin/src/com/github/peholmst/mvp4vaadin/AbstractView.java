@@ -110,6 +110,8 @@ public abstract class AbstractView<V extends View, P extends Presenter<V>>
 	 */
 	@Override
 	public P createPresenter() {
+		// TODO Use introspection to detect view and presenter classes, then
+		// attempt to create presenter.
 		throw new UnsupportedOperationException(
 				"This method has not been implemented");
 	}
@@ -122,6 +124,9 @@ public abstract class AbstractView<V extends View, P extends Presenter<V>>
 	 * using a container such as Spring or CDI, this method will be
 	 * automatically invoked after the view has been created and all the
 	 * dependencies have been injected.
+	 * <p>
+	 * Subclasses should preferably override {@link #initView()} or
+	 * {@link #finalizeInitialization()} instead of this method.
 	 * 
 	 * @see #initView()
 	 * @see #finalizeInitialization()

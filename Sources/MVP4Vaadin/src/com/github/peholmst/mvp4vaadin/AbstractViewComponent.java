@@ -16,6 +16,8 @@
 package com.github.peholmst.mvp4vaadin;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 
 import javax.annotation.PostConstruct;
 
@@ -56,19 +58,27 @@ public abstract class AbstractViewComponent<V extends View, P extends Presenter<
 	private final Class<V> viewClass;
 
 	/**
-	 * Creates a new <code>AbstractViewComponent</code>. The presenter must be
-	 * specified by either overriding {@link #createPresenter()} or calling
-	 * {@link #setPresenter(Presenter)} before the view is initialized.
+	 * Creates a new <code>AbstractViewComponent</code>. The presenter- and view
+	 * classes are determined by introspection and will be used to create the
+	 * presenter.
+	 * 
+	 * @see #createPresenter()
 	 */
+	@SuppressWarnings("unchecked")
 	public AbstractViewComponent() {
-		this(null, null);
+		Type[] actualTypeArguments = ((ParameterizedType) getClass()
+				.getGenericSuperclass()).getActualTypeArguments();
+		this.viewClass = (Class<V>) actualTypeArguments[0];
+		this.presenterClass = (Class<P>) actualTypeArguments[1];
+		setCompositionRoot(createCompositionRoot());
 	}
 
 	/**
 	 * Creates a new <code>AbstractViewComponent</code>. The presenter- and view
 	 * classes will be used to create the presenter. If any of them are
-	 * <code>null</code>, the constructor acts just like
-	 * {@link #AbstractViewComponent()}.
+	 * <code>null</code>, the presenter must be specified by either overriding
+	 * {@link #createPresenter()} or calling {@link #setPresenter(Presenter)}
+	 * before the view is initialized.
 	 * 
 	 * @see #createPresenter()
 	 */
@@ -87,10 +97,11 @@ public abstract class AbstractViewComponent<V extends View, P extends Presenter<
 	/**
 	 * {@inheritDoc}
 	 * <p>
-	 * If the {@link #AbstractViewComponent(Class, Class)} constructor was used
-	 * to create the component, this implementation will try to create a new
-	 * instance using the {@link Presenter#Presenter(View)} constructor. In all
-	 * other cases, an exception will be thrown. Subclasses may override.
+	 * If this view component has knowledge of the presenter class and view
+	 * class, this implementation will try to create a new instance using the
+	 * {@link Presenter#Presenter(View)} constructor or the
+	 * {@link Presenter#Presenter()} constructor. In all other cases an
+	 * exception will be thrown. Subclasses may override.
 	 */
 	@Override
 	public P createPresenter() {
@@ -103,9 +114,17 @@ public abstract class AbstractViewComponent<V extends View, P extends Presenter<
 					"No viewClass set - override createPresenter()");
 		}
 		try {
-			Constructor<P> constructor = presenterClass
-					.getConstructor(viewClass);
-			return constructor.newInstance(viewClass.cast(this));
+			try {
+				Constructor<P> constructor = presenterClass
+						.getConstructor(viewClass);
+				return constructor.newInstance(viewClass.cast(this));
+			} catch (NoSuchMethodException e) {
+				// Try the default constructor instead.
+				Constructor<P> constructor = presenterClass.getConstructor();
+				P presenter = constructor.newInstance();
+				presenter.setView(viewClass.cast(this));
+				return presenter;
+			}
 		} catch (Exception e) {
 			throw new UnsupportedOperationException(
 					"Cannot create a new presenter instance - override createPresenter()",
@@ -147,6 +166,9 @@ public abstract class AbstractViewComponent<V extends View, P extends Presenter<
 	 * using a container such as Spring or CDI, this method will be
 	 * automatically invoked after the view has been created and all the
 	 * dependencies have been injected.
+	 * <p>
+	 * Subclasses should preferably override {@link #initView()} or
+	 * {@link #finalizeInitialization()} instead of this method.
 	 */
 	@Override
 	@PostConstruct
@@ -229,12 +251,12 @@ public abstract class AbstractViewComponent<V extends View, P extends Presenter<
 			throws UnsupportedAdapterException {
 		return viewDelegate.adapt(adapterClass);
 	}
-		
+
 	/**
 	 * Returns the <code>AdaptableSupport</code> instance used by the view.
 	 */
 	protected AdaptableSupport getAdaptableSupport() {
 		return viewDelegate.getAdaptableSupport();
-	}	
-	
+	}
+
 }

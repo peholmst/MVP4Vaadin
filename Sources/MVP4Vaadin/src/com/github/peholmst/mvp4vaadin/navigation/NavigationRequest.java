@@ -35,8 +35,7 @@ public interface NavigationRequest extends java.io.Serializable {
 	 * Returns a map of user definable parameters that will be passed to the
 	 * view. If no parameters have been defined, an empty map is returned.
 	 * 
-	 * @see NavigationControllerCallback#navigatedBackwardToView(Map, View)
-	 * @see NavigationControllerCallback#navigatedForwardToView(Map, View)
+	 * @see NavigationControllerCallback#navigatedToView(Map, View)
 	 */
 	Map<String, Object> getParams();
 

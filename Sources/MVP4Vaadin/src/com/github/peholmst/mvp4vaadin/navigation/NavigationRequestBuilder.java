@@ -225,7 +225,7 @@ public final class NavigationRequestBuilder<P extends NavigationRequestBuilder.P
 			throw new IllegalStateException(
 					"Not enough views in controller to start from the previous view");
 		}
-		verifyPathBulderNotSet();
+		verifyPathBuilderNotSet();
 		pathBuilder = createPathBuilder(controller.getViewStack().subList(0,
 				controller.getViewStack().size() - 1));
 		return pathBuilder;
@@ -246,7 +246,7 @@ public final class NavigationRequestBuilder<P extends NavigationRequestBuilder.P
 			throw new IllegalStateException(
 					"Controller is empty, cannot start from the first view");
 		}
-		verifyPathBulderNotSet();
+		verifyPathBuilderNotSet();
 		pathBuilder = createPathBuilder(controller.getViewStack().subList(0, 1));
 		return pathBuilder;
 	}
@@ -262,7 +262,7 @@ public final class NavigationRequestBuilder<P extends NavigationRequestBuilder.P
 	 */
 	public P startWithPathToCurrentView(NavigationController controller)
 			throws IllegalStateException {
-		verifyPathBulderNotSet();
+		verifyPathBuilderNotSet();
 		pathBuilder = createPathBuilder(controller.getViewStack());
 		return pathBuilder;
 	}
@@ -277,7 +277,7 @@ public final class NavigationRequestBuilder<P extends NavigationRequestBuilder.P
 	 */
 	public P startWithPathToView(NavigationController controller, View view)
 			throws IllegalStateException {
-		verifyPathBulderNotSet();
+		verifyPathBuilderNotSet();
 		LinkedList<View> path = new LinkedList<View>();
 		boolean found = false;
 		for (View viewInPath : controller.getViewStack()) {
@@ -302,12 +302,12 @@ public final class NavigationRequestBuilder<P extends NavigationRequestBuilder.P
 	 *             if another path builder has already been created.
 	 */
 	public P startWithEmptyPath() throws IllegalStateException {
-		verifyPathBulderNotSet();
+		verifyPathBuilderNotSet();
 		pathBuilder = createPathBuilder();
 		return pathBuilder;
 	}
 
-	private void verifyPathBulderNotSet() throws IllegalStateException {
+	private void verifyPathBuilderNotSet() throws IllegalStateException {
 		if (pathBuilder != null) {
 			throw new IllegalStateException(
 					"A pathBuilder has already been created");

@@ -85,7 +85,7 @@ public abstract class Presenter<V extends View> implements Adaptable {
 	 * @param view
 	 *            the view to set.
 	 */
-	public final void setView(V view) {
+	public void setView(V view) {
 		this.view = view;
 	}
 
@@ -95,7 +95,7 @@ public abstract class Presenter<V extends View> implements Adaptable {
 	 * 
 	 * @return the view instance (never <code>null</code>).
 	 */
-	protected final V getView() {
+	public V getView() {
 		if (view == null) {
 			throw new IllegalStateException("View has not been set yet");
 		}

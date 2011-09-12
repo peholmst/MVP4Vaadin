@@ -119,7 +119,7 @@ public abstract class AbstractControllableView<V extends ControllableView, P ext
 							+ "or is not controlled at all");
 		}
 		HideOperation operation = doHideView(newView, direction);
-		if (operation != HideOperation.PREVENT) {
+		if (direction == Direction.BACKWARD && operation == HideOperation.ALLOW_WITHOUT_FORWARD_NAVIGATION) {
 			this.viewController = null;
 		}
 		return operation;

@@ -1,4 +1,7 @@
-﻿MVP4Vaadin README
+[![Published on Vaadin  Directory](https://img.shields.io/badge/Vaadin%20Directory-published-00b4f0.svg)](https://vaadin.com/directory/component/mvp4vaadin)
+[![Stars on Vaadin Directory](https://img.shields.io/vaadin-directory/star/mvp4vaadin.svg)](https://vaadin.com/directory/component/mvp4vaadin)
+
+MVP4Vaadin README
 =================
 
 MVP4Vaadin is a small Model-View-Presenter addon for Vaadin applications. 

@@ -206,7 +206,7 @@ public final class NavigationRequestBuilder<P extends NavigationRequestBuilder.P
 	 * Sets the values of multiple parameters to be passed to the view.
 	 */
 	public NavigationRequestBuilder<P> setParams(Map<String, Object> params) {
-		params.putAll(params);
+		this.params.putAll(params);
 		return this;
 	}
 

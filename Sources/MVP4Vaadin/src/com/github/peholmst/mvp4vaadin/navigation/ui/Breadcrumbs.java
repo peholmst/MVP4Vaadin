@@ -265,7 +265,7 @@ public class Breadcrumbs extends HorizontalLayout implements
 	}
 
 	protected void addSeparatorForView(final View view) {
-		if (getController().containsMoreThanOneElement()) {
+		if (getController().containsMoreThanOneElement() && !getController().getFirstView().equals(view)) {
 			Component separator = getSeparatorFactory().createSeparator();
 			addComponent(separator);
 			setComponentAlignment(separator, Alignment.MIDDLE_LEFT);
